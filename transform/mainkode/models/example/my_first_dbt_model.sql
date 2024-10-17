@@ -1,24 +1,26 @@
-
 /*
     Welcome to your first dbt model!
-    Did you know that you can also configure models directly within SQL files?
+    This model creates a view with mock data, excludes records with null `id` values, and adds a new column.
 */
 
 {{ config(materialized='table') }}
 
 with source_data as (
 
-    select 1 as id
+    select 1 as id, 'Alice' as name
     union all
-    select null as id
+    select 2 as id, 'Bob' as name
+    union all
+    select 3 as id, 'Charlie' as name
+    union all
+    select null as id, 'David' as name
+    union all
+    select 4 as id, null as name
 
 )
 
-select *
+select
+    id,
+    name
 from source_data
 
-/*
-    Uncomment the line below to remove records with null `id` values
-*/
-
--- where id is not null

@@ -1,0 +1,66 @@
+name: slim-ci
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  DBT_PROFILES_DIR: ${{ github.workspace }}/transform/dbt_profiles
+  DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode
+  DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
+  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+
+
+jobs:
+  dbt-slim-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download dbt manifest
+        run: aws s3 cp ${{ env.DBT_ARTIFACT_PATH }} ${{ github.workspace }}
+
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+      - name: Install dbt dependencies
+        run: |
+          dbt deps --project-dir=transform/mainkode
+
+      - name: Build modified dbt models and its first-order children
+        run: |
+          dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target dev \
+            --select state:modified+ --defer --state ${{ github.workspace }}
+

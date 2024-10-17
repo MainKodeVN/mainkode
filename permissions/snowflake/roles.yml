@@ -1,0 +1,69 @@
+# Roles
+roles:
+    - role_name:
+        warehouses:
+            - warehouse_name
+            ...
+
+        member_of:
+            - role_name
+            - role_name
+            ...
+
+        privileges:
+            databases:
+                read:
+                    - database_name
+                    - database_name
+                    ...
+                write:
+                    - database_name
+                    - database_name
+                    ...
+            schemas:
+                read:
+                    - database_name.*
+                    - database_name.schema_name
+
+                    ...
+                write:
+                    - database_name.*
+                    - database_name.schema_name
+                    ...
+            tables:
+                read:
+                    - database_name.*.*
+                    - database_name.schema_name.*
+                    - database_name.schema_name.table_name
+                    ...
+                write:
+                    - database_name.*.*
+                    - database_name.schema_name.*
+                    - database_name.schema_name.table_name
+                    ...
+
+        owns:
+            databases:
+                - database_name
+                ...
+            schemas:
+                - database_name.*
+                - database_name.schema_name
+                ...
+            tables:
+                - database_name.*.*
+                - database_name.schema_name.*
+                - database_name.schema_name.table_name
+                ...
+
+    - role_name:
+        owner: role_name
+    ... ... ...
+
+# Users
+users:
+    - user_name:
+        can_login: boolean
+        member_of:
+            - role_name
+    ... ... ...

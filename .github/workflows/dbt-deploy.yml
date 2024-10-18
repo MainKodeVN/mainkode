@@ -1,4 +1,4 @@
-name: slim-ci
+name: dbt-deploy
 
 on:
   push:
@@ -20,7 +20,7 @@ env:
 
 
 jobs:
-  dbt-slim-ci:
+  dbt-deploy:
     runs-on: ubuntu-latest
 
     steps:

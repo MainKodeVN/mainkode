@@ -1,4 +1,4 @@
-name: slim-ci
+name: dbt-slim
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ env:
 
 
 jobs:
-  dbt-slim-ci:
+  dbt-slim:
     runs-on: ubuntu-latest
 
     steps:

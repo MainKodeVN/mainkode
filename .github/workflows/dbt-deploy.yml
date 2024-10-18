@@ -71,5 +71,6 @@ jobs:
         with:
           push: true
           tags: shrestic/dbt-image:latest
+          file: ${{ github.workspace }}/Dockerfile.prod
           secret-files: |
             "aws=${{ github.workspace }}/.aws/credentials" 

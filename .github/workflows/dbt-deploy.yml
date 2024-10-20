@@ -71,6 +71,7 @@ jobs:
         with:
           push: true
           tags: shrestic/dbt-image:latest
+          build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/
           file: ${{ github.workspace }}/Dockerfile.prod
           secret-files: |
             "aws=${{ github.workspace }}/.aws/credentials" 

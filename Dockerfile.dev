@@ -5,7 +5,6 @@ FROM python:3.10-slim
 ENV WORKDIR=dbt_core_project
 RUN mkdir -p $WORKDIR
 WORKDIR $WORKDIR
-ENV DBT_ARTIFACT=./mainkode/target/manifest.json
 ENV S3_TARGET_PATH=
 
 # install AWS CLI and other packages needed for dbt
@@ -29,8 +28,7 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
 # Copy the dbt project, dbt profile and scripts folder to image
-COPY transform/mainkode mainkode
-COPY transform/dbt_profiles dbt_profiles
+COPY transform/mainkode_analytics mainkode_analytics
 COPY entrypoint.sh entrypoint.sh
 
 # Add execute permissions to the entrypoint script

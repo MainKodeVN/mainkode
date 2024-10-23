@@ -11,13 +11,16 @@ permissions:
 
 env:
   AWS_REGION: us-east-1
-  DBT_PROFILES_DIR: ${{ github.workspace }}/transform/dbt_profiles
-  DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode
+  DBT_PROFILES_DIR: ${{ github.workspace }}/transform/mainkode_analytics/profiles
+  DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
   DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
   SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
-
+  SNOWFLAKE_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+  SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+  SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
+  SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
 
 jobs:
   dbt-slim:
@@ -52,7 +55,7 @@ jobs:
 
       - name: Install dbt dependencies
         run: |
-          dbt deps --project-dir=transform/mainkode
+          dbt deps --project-dir=transform/mainkode_analytics
 
       - name: Build modified dbt models and its first-order children
         run: |

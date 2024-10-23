@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: salesforce
+    database: raw_dev
+    tables:
+      - name: opportunities
+        columns:
+          - name: opportunityid
+            data_type: number
+          - name: customerid
+            data_type: number
+          - name: opportunitystage
+            data_type: varchar
+          - name: closedate
+            data_type: date
+          - name: expectedrevenue
+            data_type: float
+

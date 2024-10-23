@@ -1,0 +1,21 @@
+{
+    "cSpell.words": [
+        "accountadmin",
+        "closedate",
+        "customerid",
+        "dotenv",
+        "expectedrevenue",
+        "levelname",
+        "mainkode",
+        "opportunityid",
+        "opportunitystage",
+        "snowpipe",
+        "Snowpipes",
+        "sqlalchemy",
+        "sqlfluff",
+        "stgs",
+        "templater",
+        "varchar"
+    ],
+    "dbt.enableNewLineagePanel": true
+}

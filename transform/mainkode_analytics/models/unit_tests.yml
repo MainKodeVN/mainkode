@@ -1,0 +1,28 @@
+unit_tests:
+  - name: test_stgs_salesforce__opportunities
+    model: stgs_salesforce__opportunities
+    given:
+      - input: source('salesforce', 'opportunities')
+        rows:
+          - opportunityid: '001'
+            customerid: 'C001'
+            opportunitystage: 'Closed Won'
+            closedate: '2024-01-01'
+            expectedrevenue: 10000
+          - opportunityid: '002'
+            customerid: 'C002'
+            opportunitystage: 'Open'
+            closedate: '2024-03-01'
+            expectedrevenue: 20000
+    expect:
+      rows:
+        - opportunityid: '001'
+          customerid: 'C001'
+          opportunitystage: 'Closed Won'
+          closedate: '2024-01-01'
+          expectedrevenue: 10000
+        - opportunityid: '002'
+          customerid: 'C002'
+          opportunitystage: 'Open'
+          closedate: '2024-03-01'
+          expectedrevenue: 20000

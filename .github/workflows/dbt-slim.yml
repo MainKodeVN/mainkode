@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: us-west-1
   DBT_PROFILES_DIR: ${{ github.workspace }}/transform/mainkode_analytics/profiles
   DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
   DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json

@@ -1,0 +1,5 @@
+version: 2
+
+data_tests:
+  - name: assert_opportunities_unique_id
+    description: "Ensure that each opportunity has a unique identifier in the stg_salesforce__opportunities model."

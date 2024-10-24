@@ -21,14 +21,17 @@ env:
   SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
   SNOWFLAKE_SCHEMA: ${{ secrets.SNOWFLAKE_SCHEMA }}
   SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+  BRANCH: ${{ secrets.BRANCH }}
+
 
 jobs:
   dbt-slim:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -62,3 +65,6 @@ jobs:
           dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target dev \
             --select state:modified+ --defer --state ${{ github.workspace }}
 
+      - name: Lint dbt models
+        run: |
+          cd ${{ env.DBT_PROJECT_DIR }} && make lint-changed-new BRANCH=${{ env.BRANCH }}

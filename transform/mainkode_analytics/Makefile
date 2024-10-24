@@ -1,42 +1,35 @@
-# Makefile for SQLFluff linting and fixing in a dbt project
-
 # Default directories and files
 MODELS_DIR := models/
-DEV_BRANCH := $(DEV)  # Allows passing the branch dynamically as DEV
-SQL_FILES := $(shell git diff --name-only $(DEV_BRANCH) -- '*.sql')
+TARGET_BRANCH := $(BRANCH)  # Allows passing the branch dynamically as BRANCH
+SQL_FILES := $(shell (git diff --name-only $(TARGET_BRANCH) -- '*.sql'; git ls-files --others --exclude-standard -- '*.sql') | sed -n 's|.*$(MODELS_DIR)|$(MODELS_DIR)|p')
 
 # Default target: lint all SQL files
 lint:
 	@echo "Linting all SQL files in the $(MODELS_DIR) directory..."
 	sqlfluff lint $(MODELS_DIR)
 
-# Target to lint only changed SQL files compared to the provided branch (DEV)
-lint-changed:
-	@if [ -z "$(DEV_BRANCH)" ]; then \
-		echo "Error: No branch provided. Use 'make lint-changed DEV=<branch_name>'."; \
+# Target to lint both changed and new (untracked) SQL files
+lint-changed-new:
+	@if [ -z "$(TARGET_BRANCH)" ]; then \
+		echo "Error: No branch provided. Use 'make lint-changed-new BRANCH=<branch_name>'."; \
 		exit 1; \
 	fi
-	@echo "Linting changed SQL files compared to $(DEV_BRANCH)..."
+	@echo "Linting changed and new SQL files compared to $(TARGET_BRANCH)..."
 	@if [ -z "$(SQL_FILES)" ]; then \
-		echo "No changed SQL files to lint."; \
+		echo "No changed or new SQL files to lint."; \
 	else \
 		echo "$(SQL_FILES)" | xargs sqlfluff lint; \
 	fi
 
-# Target to fix all SQL files
-fix:
-	@echo "Fixing all SQL files in the $(MODELS_DIR) directory..."
-	sqlfluff fix $(MODELS_DIR)
-
-# Target to fix only changed SQL files compared to the provided branch (DEV)
-fix-changed:
-	@if [ -z "$(DEV_BRANCH)" ]; then \
-		echo "Error: No branch provided. Use 'make fix-changed DEV=<branch_name>'."; \
+# Target to fix both changed and new (untracked) SQL files
+fix-changed-new:
+	@if [ -z "$(TARGET_BRANCH)" ]; then \
+		echo "Error: No branch provided. Use 'make fix-changed-new BRANCH=<branch_name>'."; \
 		exit 1; \
 	fi
-	@echo "Fixing changed SQL files compared to $(DEV_BRANCH)..."
+	@echo "Fixing changed and new SQL files compared to $(TARGET_BRANCH)..."
 	@if [ -z "$(SQL_FILES)" ]; then \
-		echo "No changed SQL files to fix."; \
+		echo "No changed or new SQL files to fix."; \
 	else \
 		echo "$(SQL_FILES)" | xargs sqlfluff fix; \
 	fi
@@ -55,8 +48,8 @@ fix-model:
 help:
 	@echo "Available targets:"
 	@echo "  make lint           - Lint all SQL files in the $(MODELS_DIR) directory"
-	@echo "  make lint-changed DEV=<branch_name>   - Lint only the changed SQL files compared to the provided DEV branch"
+	@echo "  make lint-changed-new BRANCH=<branch_name>   - Lint both changed and new (untracked) SQL files compared to the provided TARGET_BRANCH"
 	@echo "  make fix            - Automatically fix all SQL files in the $(MODELS_DIR)"
-	@echo "  make fix-changed DEV=<branch_name>    - Automatically fix only the changed SQL files compared to the provided DEV branch"
+	@echo "  make fix-changed-new BRANCH=<branch_name>    - Automatically fix both changed and new (untracked) SQL files compared to the provided TARGET_BRANCH"
 	@echo "  make lint-model MODEL=<model>  - Lint a specific model"
 	@echo "  make fix-model MODEL=<model>   - Fix a specific model"

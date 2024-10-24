@@ -49,7 +49,7 @@ jobs:
         run: |
           dbt deps --project-dir=transform/mainkode_analytics
 
-      - name: Build modified dbt models and its first-order children
+      - name: Build and test modified dbt models and their first-order children
         run: |
           # build all the models that the unit tests need to run, but empty
           dbt run --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target dev \

@@ -3,14 +3,20 @@ name: dbt-deploy
 on:
   push:
     branches:
-      - dev
       - qa
       - prod
   workflow_dispatch:
     inputs:
       developer:
-        description: 'Developer name (e.g., Alex)'
+        description: 'Select a dbt developer'
         required: true
+        default: 'SHRESTIC'
+        type: choice
+        options:
+          - SHRESTIC
+          - SAM
+          - TAYLOR
+
 
 permissions:
   id-token: write
@@ -27,7 +33,7 @@ env:
   SNOWFLAKE_TRANSFORM_USER: ${{ secrets[format('DBT_USER_{0}', github.event.inputs.developer)] }}
   SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
   SNOWFLAKE_TRANSFORM_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
-  SCHEMA_DBT_USERNAME: ${{format('DBT_{0}', github.event.inputs.developer)}}
+  SCHEMA_DBT_USERNAME: ${{ format('DBT_{0}', github.event.inputs.developer) }}
   SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
   TARGET_ENV: ${{ vars.TARGET_ENV }}
 

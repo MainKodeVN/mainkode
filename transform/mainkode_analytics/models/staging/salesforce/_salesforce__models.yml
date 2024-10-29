@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: stgs_salesforce__opportunities
+    description: "Staging model for Salesforce opportunities data. This model captures opportunity details for each customer and tracks the sales stage, expected revenue, and important timestamps."
+
+    columns:
+      - name: opportunity_id
+        data_type: number
+        description: "Unique identifier for the opportunity record. Used to distinguish each sales opportunity."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        data_type: number
+        description: "Unique identifier for the customer associated with the opportunity. Links this opportunity to a specific customer."
+        data_tests:
+          - not_null
+
+      - name: opportunity_stage
+        data_type: varchar
+        description: "Current stage of the sales opportunity, such as 'prospecting', 'negotiation', or 'won'. Indicates the progress in the sales pipeline."
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ['prospecting', 'negotiation', 'won', 'lost', 'closed']
+
+      - name: close_date
+        data_type: date
+        description: "The expected or actual close date for the opportunity. Represents when the deal is anticipated or was completed."
+        data_tests:
+          - not_null  # Only if this is a required field; remove if null is allowed
+
+      - name: expected_revenue
+        data_type: number
+        description: "Estimated revenue that this opportunity is expected to generate if it successfully closes. This is often used for forecasting."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"  # Ensures revenue is non-negative
+
+      - name: created_at
+        data_type: timestamp_ntz
+        description: "Timestamp of when the opportunity record was first created. Useful for tracking when an opportunity was added to the system."
+        data_tests:
+          - not_null
+
+      - name: updated_at
+        data_type: timestamp_ntz
+        description: "Timestamp of the last update made to the opportunity record. This field helps track changes over time and supports incremental loading."
+        data_tests:
+          - not_null

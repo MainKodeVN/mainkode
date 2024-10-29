@@ -1,0 +1,38 @@
+# Use an official Python runtime as the base image
+FROM python:3.10-slim
+
+# Set the working directory in the container
+ENV WORKDIR=dbt_core_project
+RUN mkdir -p $WORKDIR
+WORKDIR $WORKDIR
+ENV S3_TARGET_PATH=
+ENV TARGET_ENV=
+
+# install AWS CLI and other packages needed for dbt
+RUN apt-get update && apt-get install -y \
+  git-all \
+  curl \
+  unzip
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+  && unzip awscliv2.zip \
+  && ./aws/install \
+  && rm -rf awscliv2.zip
+
+RUN --mount=type=secret,id=aws \
+  mkdir -p /root/.aws && \
+  cat /run/secrets/aws > /root/.aws/credentials
+
+
+# Copy the requirements file to the container
+COPY ./requirements.txt .
+# Install the Python dependencies
+RUN pip install -r requirements.txt
+
+# Copy the dbt project, dbt profile and scripts folder to image
+COPY transform/mainkode_analytics mainkode_analytics
+COPY entrypoint.sh entrypoint.sh
+
+# Add execute permissions to the entrypoint script
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT [ "./entrypoint.sh" ]

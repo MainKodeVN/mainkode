@@ -1,0 +1,21 @@
+# backup_manifest.yaml
+# Configuration for tables and snapshots to back up
+
+table_backup_1:
+  TABLE_LIST_BACKUP:
+    - table_1
+    - table_2
+    - table_3
+  INCLUDED: true
+
+table_backup_2:
+  TABLE_LIST_BACKUP:
+    - table_4
+    - table_5
+  INCLUDED: false
+
+snapshot_backup:
+  TABLE_LIST_BACKUP:
+    - snapshot_1
+    - snapshot_2
+  INCLUDED: true

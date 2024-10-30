@@ -8,7 +8,7 @@ Snowflake's **Time Travel** feature allows you to query and access data as it ex
 
 ### 1. Query Data Using a Timestamp or Offset with `AT`
 
-You can specify a specific timestamp or an offset to retrieve data as it existed at that time.
+You can specify a specific timestamp or an offset to retrieve data as it existed at that time.  
 
 - **Using a Specific Timestamp**
 

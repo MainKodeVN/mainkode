@@ -3,21 +3,9 @@ name: dbt-slim
 on:
   pull_request:
     branches:
-      - qa
-      - prod
+      - master
 
   workflow_dispatch:
-    inputs:
-      developer:
-        description: 'Select a dbt developer'
-        required: true
-        default: 'SHRESTIC'
-        type: choice
-        options:
-          - SHRESTIC
-          - SAM
-          - TAYLOR
-    
 
 permissions:
   id-token: write
@@ -29,20 +17,35 @@ env:
   DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
   DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-  SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets[format('DBT_PASS_{0}', github.event.inputs.developer)] }}
-  SNOWFLAKE_TRANSFORM_USER: ${{ secrets[format('DBT_USER_{0}', github.event.inputs.developer)] }}
-  SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
-  SNOWFLAKE_TRANSFORM_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
-  SCHEMA_DBT_USERNAME: ${{ format('DBT_{0}', github.event.inputs.developer) }}
-  SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
-  BRANCH: ${{ vars.BRANCH }}
-  TARGET_ENV: ${{ vars.TARGET_ENV }}
+  SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
 
 
 jobs:
-  dbt-slim:
+  lint:
+    name: SQL Linting with SQLFluff
     runs-on: ubuntu-latest
-    environment: ${{ github.base_ref == 'dev' && 'dev' || github.base_ref == 'qa' && 'qa' || 'prod' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install SQLFluff
+        run: |
+          pip install sqlfluff
+      - name: Run SQLFluff Linting
+        run: |
+          cd ${{ env.DBT_PROJECT_DIR }} && make lint-changed-new BRANCH=origin/master
+
+  clone-and-test:
+    name: Clone Database and Run dbt Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    environment: dbt-dev
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,18 +72,40 @@ jobs:
           role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Clone Raw and Analytics Databases to Temporary CI Environment
+        env:
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: 'SNOWFLAKE'
+        run: |
+          cd  ${{ github.workspace }}/utils/db
+          python snowflake_cli_helper.py clone ANALYTICS_CLONE ANALYTICS_PROD
+          python snowflake_cli_helper.py clone RAW_CLONE RAW_PROD
+
       - name: Download dbt manifest
         run: aws s3 cp ${{ env.DBT_ARTIFACT_PATH }} ${{ github.workspace }}
 
       - name: Install dbt dependencies
         run: |
-          dbt deps --project-dir=transform/mainkode_analytics
+          dbt deps --project-dir=${{ env.DBT_PROJECT_DIR }}
 
       - name: Build modified dbt models and its first-order children
+        env:
+          SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+          SNOWFLAKE_TRANSFORM_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_TRANSFORM_DATABASE: ANALYTICS_CLONE
+          SNOWFLAKE_TRANSFORM_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          PR_NUMBER: ${{ github.event.number }}
         run: |
-          dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=${{ env.TARGET_ENV }} \
-            --select state:modified+ --defer --state ${{ github.workspace }}
+          dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=ci \
+            --select state:modified+ --defer --state ${{ github.workspace }} --vars '{"schema": "CI_SCHEMA_${{ env.PR_NUMBER }}"}' --target=ci"
 
-      - name: Lint dbt models
+      - name: Drop Clone Raw and Analytics Databases 
+        env:
+          SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+          SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
         run: |
-          cd ${{ env.DBT_PROJECT_DIR }} && make lint-changed-new BRANCH=${{ env.BRANCH }}
+          cd  ${{ github.workspace }}/utils/db
+          python snowflake_cli_helper.py drop ANALYTICS_CLONE
+          python snowflake_cli_helper.py drop RAW_CLONE

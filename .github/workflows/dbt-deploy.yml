@@ -3,20 +3,10 @@ name: dbt-deploy
 on:
   push:
     branches:
+      - dev
       - qa
       - prod
   workflow_dispatch:
-    inputs:
-      developer:
-        description: 'Select a dbt developer'
-        required: true
-        default: 'SHRESTIC'
-        type: choice
-        options:
-          - SHRESTIC
-          - SAM
-          - TAYLOR
-
 
 permissions:
   id-token: write
@@ -29,19 +19,17 @@ env:
   DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
   DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-  SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets[format('DBT_PASS_{0}', github.event.inputs.developer)] }}
-  SNOWFLAKE_TRANSFORM_USER: ${{ secrets[format('DBT_USER_{0}', github.event.inputs.developer)] }}
-  SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_DATABASE }}
-  SNOWFLAKE_TRANSFORM_ROLE: ${{ vars.SNOWFLAKE_ROLE }}
-  SCHEMA_DBT_USERNAME: ${{ format('DBT_{0}', github.event.inputs.developer) }}
-  SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_WAREHOUSE }}
-  TARGET_ENV: ${{ vars.TARGET_ENV }}
-
-
+  SNOWFLAKE_TRANSFORM_USER: ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+ 
 jobs:
   dbt-unit-tests:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'dev' && 'dev' || github.ref_name == 'qa' && 'qa' || 'prod' }}
+    environment: dbt-pre-prod
+    env:
+      SNOWFLAKE_TRANSFORM_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_TRANSFORM_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,17 +55,21 @@ jobs:
       - name: Build and test modified dbt models and their first-order children
         run: |
           # build all the models that the unit tests need to run, but empty
-          dbt run --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=${{ env.TARGET_ENV }} \
+          dbt run --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=pre-prod \
             --select +test_type:unit --empty
 
           # perform the actual unit tests
-          dbt test --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=${{ env.TARGET_ENV }} \
+          dbt test --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=pre-prod \
             --select +test_type:unit
 
   dbt-deploy:
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'dev' && 'dev' || github.ref_name == 'qa' && 'qa' || 'prod' }}
+    environment: dbt-prod
     needs: dbt-unit-tests
+    env:
+      SNOWFLAKE_TRANSFORM_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_TRANSFORM_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -132,8 +124,12 @@ jobs:
             "aws=${{ github.workspace }}/.aws/credentials" 
   dbt-docs:
     environment:
-      name: dbt-docs-pages
+      name: dbt-prod
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      SNOWFLAKE_TRANSFORM_DATABASE: ${{ secrets.SNOWFLAKE_DATABASE }}
+      SNOWFLAKE_TRANSFORM_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+      SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
 
     runs-on: ubuntu-latest
 
@@ -161,8 +157,8 @@ jobs:
         id: docs
         shell: bash -l {0}
         run: |
-          dbt deps --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=dev
-          dbt docs generate --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=dev --target-path dbt-docs
+          dbt deps --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=prod
+          dbt docs generate --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=prod --target-path dbt-docs
 
       - name: Upload DBT docs Pages artifact
         id: build

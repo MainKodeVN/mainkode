@@ -2,7 +2,13 @@ version: 2
 
 sources:
   - name: salesforce
-    database: raw_dev
+    database: |
+      {%- if  target.name == "dev" -%} raw_dev
+      {%- elif target.name == "ci"  -%} raw_clone
+      {%- elif target.name == "pre-prod"  -%} raw_preprod
+      {%- elif target.name == "prod"  -%} raw_prod
+      {%- else -%} invalid_database
+      {%- endif -%}
     tables:
       - name: opportunities
         columns:

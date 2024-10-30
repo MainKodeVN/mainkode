@@ -1,5 +1,5 @@
 from extract.salesforce.api import SalesforceAPI
-from utils.s3_manager import S3Manager
+from utils.aws.s3_manager import S3Manager
 
 
 s3_manager = S3Manager()

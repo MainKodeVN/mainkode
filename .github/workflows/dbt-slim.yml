@@ -99,12 +99,13 @@ jobs:
           PR_NUMBER: ${{ github.event.number }}
         run: |
           dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=ci \
-            --select state:modified+ --defer --state ${{ github.workspace }} --vars '{"schema": "CI_SCHEMA_${{ env.PR_NUMBER }}"}' --target=ci"
+            --select state:modified+ --defer --state ${{ github.workspace }} --vars '{schema: CI_SCHEMA_${{ env.PR_NUMBER }}}' --target=ci
 
       - name: Drop Clone Raw and Analytics Databases 
         env:
           SNOWFLAKE_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
           SNOWFLAKE_WAREHOUSE: ${{ secrets.SNOWFLAKE_WAREHOUSE }}
+          SNOWFLAKE_DATABASE: 'SNOWFLAKE'
         run: |
           cd  ${{ github.workspace }}/utils/db
           python snowflake_cli_helper.py drop ANALYTICS_CLONE

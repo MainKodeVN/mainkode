@@ -103,7 +103,7 @@ class SnowflakeManager:
     ):
 
         create_pipe_query = f"""
-        CREATE OR REPLACE PIPE {pipe_name}
+        CREATE PIPE IF NOT EXISTS {pipe_name}
         AUTO_INGEST = TRUE
         AS
         COPY INTO {table_name}
@@ -201,7 +201,7 @@ class SnowflakeManager:
     ):
 
         create_stage_query = f"""
-        CREATE OR REPLACE STAGE {stage_name}
+        CREATE STAGE IF NOT EXISTS {stage_name}
         URL='{s3_url}'
         STORAGE_INTEGRATION = {storage_integration}
         FILE_FORMAT=(TYPE={file_format} ,{file_format_options})

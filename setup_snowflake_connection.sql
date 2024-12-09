@@ -38,7 +38,7 @@ CREATE DATABASE RAW_PROD COMMENT = 'Production landing zone for raw data';
 CREATE DATABASE ANALYTICS_PROD COMMENT = 'Production data layer for analytics';
 
 CREATE DATABASE RAW_DEV CLONE RAW_PROD COMMENT = 'Development landing zone for raw data';
-CREATE DATABASE ANALYTICS_DEV CLONE ANALYTICS COMMENT = 'Development data layer for analytics';
+CREATE DATABASE ANALYTICS_DEV CLONE ANALYTICS_PROD COMMENT = 'Development data layer for analytics';
 
 CREATE DATABASE RAW_PREPROD CLONE RAW_PROD COMMENT = 'QA landing zone for raw data';
 CREATE DATABASE ANALYTICS_PREPROD CLONE ANALYTICS_PROD COMMENT = 'QA data layer for analytics';

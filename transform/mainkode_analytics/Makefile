@@ -44,6 +44,11 @@ fix-model:
 	@echo "Fixing the provided model: $(MODEL)"
 	sqlfluff fix $(MODELS_DIR)/$(MODEL)
 
+# Target to fix all SQL files
+fix:
+	@echo "Fixing all SQL files in the $(MODELS_DIR) directory..."
+	sqlfluff fix $(MODELS_DIR)
+
 # Help message for makefile
 help:
 	@echo "Available targets:"

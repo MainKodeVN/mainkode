@@ -42,7 +42,7 @@ mkdir -p "$target_directory" || { echo "Error: Could not create directory $targe
 # Run dbt run-operation and capture the result in a new file
 dbt_output_file="$target_directory/_${schema_name}__sources.yml"
 
-dbt --quiet run-operation --profiles-dir=./profiles generate_source --no-use-colors --args "{\"schema_name\": \"$schema_name\", \"database_name\": \"$database_name\", \"table_names\": $table_names_json, \"generate_columns\": true}" > "$dbt_output_file"
+dbt --quiet run-operation generate_source --no-use-colors --args "{\"schema_name\": \"$schema_name\", \"database_name\": \"$database_name\", \"table_names\": $table_names_json, \"generate_columns\": true}" > "$dbt_output_file"
 
 # Check if the file was created and has content
 if [[ -s "$dbt_output_file" ]]; then

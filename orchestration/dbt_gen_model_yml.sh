@@ -38,7 +38,7 @@ cd "transform/mainkode_analytics"
 yaml_output_file="models/$layer/$source_name/_${source_name}__models.yml"
 
 # Generate the model YAML for all models in one command
-dbt --quiet run-operation --profiles-dir=./profiles generate_model_yaml --no-use-colors --args "{\"model_names\": $model_names_json}" > "$yaml_output_file"
+dbt --quiet run-operation generate_model_yaml --no-use-colors --args "{\"model_names\": $model_names_json}" > "$yaml_output_file"
 
 # Check if the model YAML file was created and has content
 if [[ -s "$yaml_output_file" ]]; then

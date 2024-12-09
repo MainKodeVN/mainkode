@@ -60,7 +60,3 @@ class BaseAPI:
                 # Recursively download CSVs from subdirectories
                 self.fetch_data(file_info["url"], sub_dir_path)
 
-
-if __name__ == "__main__":
-    api = BaseAPI(source="salesforce")
-    api.fetch_data()

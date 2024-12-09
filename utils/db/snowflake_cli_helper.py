@@ -14,20 +14,20 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 @click.group()
 @click.option("-a", "--account", envvar="SNOWFLAKE_ACCOUNT", required=True, help="The name of the Snowflake account")
-@click.option("-d", "--database", envvar="SNOWFLAKE_DATABASE", required=True, help="The Snowflake database")
-@click.option("-s", "--schema", envvar="SNOWFLAKE_SCHEMA", help="The Snowflake schema (optional)")
-@click.option("-u", "--user", envvar="SNOWFLAKE_USER", required=True, help="User for connecting to Snowflake")
+@click.option("-d", "--database", envvar="SNOWFLAKE_TRANSFORM_DATABASE", required=True, help="The Snowflake database")
+@click.option("-s", "--schema", envvar="SNOWFLAKE_TRANSFORM_SCHEMA", help="The Snowflake schema (optional)")
+@click.option("-u", "--user", envvar="SNOWFLAKE_TRANSFORM_USER", required=True, help="User for connecting to Snowflake")
 @click.option(
     "-p",
     "--password",
-    envvar="SNOWFLAKE_PASSWORD",
+    envvar="SNOWFLAKE_TRANSFORM_PASSWORD",
     required=True,
     prompt=True,
     hide_input=True,
     help="Password for connecting to Snowflake",
 )
-@click.option("-w", "--warehouse", envvar="SNOWFLAKE_WAREHOUSE", help="Warehouse to use when connecting to Snowflake")
-@click.option("-r", "--role", envvar="SNOWFLAKE_ROLE", help="Role to use when connecting to Snowflake")
+@click.option("-w", "--warehouse", envvar="SNOWFLAKE_TRANSFORM_WAREHOUSE", help="Warehouse to use when connecting to Snowflake")
+@click.option("-r", "--role", envvar="SNOWFLAKE_TRANSFORM_ROLE", help="Role to use when connecting to Snowflake")
 @click.pass_context
 def snowflake(
     ctx: click.Context,

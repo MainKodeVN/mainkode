@@ -95,8 +95,8 @@ snowflake._legacy==0.13.1
 snowflake.core==0.13.1
 sortedcontainers==2.4.0
 SQLAlchemy==2.0.36
-sqlfluff==3.2.4
-sqlfluff-templater-dbt==3.2.4
+sqlfluff==3.2.5
+sqlfluff-templater-dbt==3.2.5
 sqlparse==0.5.1
 tblib==3.0.0
 termcolor==2.5.0

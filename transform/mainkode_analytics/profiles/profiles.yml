@@ -29,4 +29,13 @@ mainkode:
       type: snowflake
       user: "{{ env_var('SNOWFLAKE_TRANSFORM_USER') }}"
       warehouse: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
-  target: ci
+    lint:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_TRANSFORM_DATABASE') }}"
+      password: "{{ env_var('SNOWFLAKE_TRANSFORM_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_TRANSFORM_ROLE') }}"
+      schema: 'INFORMATION_SCHEMA'
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_TRANSFORM_USER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
+  target: lint

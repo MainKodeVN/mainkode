@@ -1,7 +1,7 @@
 # Default directories and files
 MODELS_DIR := models/
 TARGET_BRANCH := $(BRANCH)  # Allows passing the branch dynamically as BRANCH
-SQL_FILES := $(shell (git diff --name-only $(TARGET_BRANCH) -- '*.sql'; git ls-files --others --exclude-standard -- '*.sql') | sed -n 's|.*$(MODELS_DIR)|$(MODELS_DIR)|p')
+SQL_FILES := $(shell (git diff --name-only --diff-filter=ACMRT $(TARGET_BRANCH) -- '*.sql'; git ls-files --others --exclude-standard -- '*.sql') | sed -n 's|.*$(MODELS_DIR)|$(MODELS_DIR)|p')
 
 # Default target: lint all SQL files
 lint:
@@ -43,6 +43,11 @@ lint-model:
 fix-model:
 	@echo "Fixing the provided model: $(MODEL)"
 	sqlfluff fix $(MODELS_DIR)/$(MODEL)
+
+# Target to fix all SQL files
+fix:
+	@echo "Fixing all SQL files in the $(MODELS_DIR) directory..."
+	sqlfluff fix $(MODELS_DIR)
 
 # Help message for makefile
 help:

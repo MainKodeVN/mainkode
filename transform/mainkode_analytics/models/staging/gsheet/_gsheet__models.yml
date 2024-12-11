@@ -1,0 +1,65 @@
+version: 2
+
+models:
+  - name: stgs_gsheet__eu_vat_rates
+    description: ""
+    columns:
+      - name: _airbyte_raw_id
+        data_type: number
+        description: ""
+
+      - name: _airbyte_extracted_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: country_code
+        data_type: varchar
+        description: ""
+
+      - name: year
+        data_type: number
+        description: ""
+
+      - name: vat_rate
+        data_type: number
+        description: ""
+
+      - name: member_state
+        data_type: varchar
+        description: ""
+
+  - name: stgs_gsheet__sku_list_cost
+    description: ""
+    columns:
+      - name: _airbyte_raw_id
+        data_type: number
+        description: ""
+
+      - name: _airbyte_extracted_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: sku
+        data_type: varchar
+        description: ""
+
+      - name: cost
+        data_type: number
+        description: ""
+
+      - name: name
+        data_type: varchar
+        description: ""
+
+      - name: size
+        data_type: varchar
+        description: ""
+
+      - name: year
+        data_type: number
+        description: ""
+
+      - name: category
+        data_type: varchar
+        description: ""
+

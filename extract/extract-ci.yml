@@ -1,0 +1,52 @@
+# Base job template
+.job_template: &base_job
+  image: python:3.9
+  stage: extract
+  before_script:
+    - echo "Setting up environment for extraction"
+    - export PROJECT_DIR="$CI_PROJECT_DIR"
+    - export DATA_DATABASE="DEV"
+  tags:
+    - data-team
+
+# Job for extracting data from Google Sheets
+extract_google_sheets:
+  <<: *base_job
+  script:
+    - cd extract/
+    - python google_sheets_extractor.py --config configs/google_sheets.yml --database $DATA_DATABASE
+  only:
+    - main
+  when: manual
+
+# Job for extracting data from an API
+extract_api_data:
+  <<: *base_job
+  script:
+    - cd extract/
+    - python api_data_extractor.py --config configs/api_data.yml --database $DATA_DATABASE
+  only:
+    - main
+  when: manual
+
+# Job for processing data with a custom Python script
+process_data:
+  <<: *base_job
+  stage: process
+  script:
+    - cd process/
+    - python data_processor.py --input data/raw/ --output data/processed/
+  only:
+    - main
+  when: manual
+
+# Job for testing data extraction scripts
+test_data_extraction:
+  <<: *base_job
+  stage: test
+  script:
+    - cd tests/
+    - pytest test_extraction.py
+  only:
+    - main
+  when: manual

@@ -1,0 +1,46 @@
+version: 2
+
+sources:
+  - name: gsheet
+    database: |
+      {%- if  target.name == "dev" -%} raw_dev
+      {%- elif target.name == "ci"  -%} raw_clone
+      {%- elif target.name == "pre-prod"  -%} raw_preprod
+      {%- elif target.name == "prod"  -%} raw_prod
+      {%- else -%} invalid_database
+      {%- endif -%}
+    tables:
+      - name: gsheet_sku_list_cost
+        columns:
+          - name: _airbyte_raw_id
+            data_type: number
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: sku
+            data_type: varchar
+          - name: cost
+            data_type: number
+          - name: name
+            data_type: varchar
+          - name: size
+            data_type: varchar
+          - name: year
+            data_type: number
+          - name: category
+            data_type: varchar
+
+      - name: gsheet_eu_vat_rates
+        columns:
+          - name: _airbyte_raw_id
+            data_type: number
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: code
+            data_type: varchar
+          - name: year
+            data_type: number
+          - name: vat_rate
+            data_type: varchar
+          - name: member_states
+            data_type: varchar
+

@@ -1,0 +1,38 @@
+config:
+  partial_parse: true
+gitlab-snowflake:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      threads: 8
+      account: gitlab
+      user: YOUR USER # <-- This will be your GitLab email
+      role: YOUR ROLE # 
+      database: YOUR USERNAME 
+      warehouse: YOUR WAREHOUSE # <-- [ANALYST_XS, DEV_XS], depends on your role
+      schema: preparation
+      authenticator: externalbrowser # <--- You must be logged in via OKTA
+
+    # You can create targets for any warehouse that you have access to.
+    dev_..:
+      type: snowflake
+      threads: 8
+      account: gitlab
+      user: YOUR USER # <-- This will be your GitLab email
+      role: YOUR ROLE
+      database: YOUR USERNAME 
+      warehouse: YOUR WAREHOUSE # <-- depends on your role
+      schema: preparation
+      authenticator: externalbrowser # <--- You must be logged in via OKTA
+      
+    docs:
+      type: snowflake
+      threads: 8
+      account: gitlab
+      user: YOUR USER # <-- This will be your GitLab email
+      role: YOUR ROLE # 
+      database: YOUR USERNAME
+      warehouse: ANALYST_XS # <-- [ANALYST_XS, DEV_XS], depends on your role
+      schema: preparation
+      authenticator: externalbrowser # <--- You must be logged in via OKTA

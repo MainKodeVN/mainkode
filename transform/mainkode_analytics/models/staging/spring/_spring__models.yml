@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stgs_spring__shipping_cost
+    description: ""
+    columns:
+      - name: _airbyte_raw_id
+        data_type: number
+        description: ""
+
+      - name: _airbyte_extracted_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: _airbyte_meta
+        data_type: variant
+        description: ""
+
+      - name: net_amount_euro
+        data_type: number
+        description: ""
+
+      - name: tracking_number
+        data_type: varchar
+        description: ""
+
+      - name: cleaned_tracking_number
+        data_type: varchar
+        description: ""
+
+      - name: recipient_country
+        data_type: varchar
+        description: ""
+
+      - name: service_description
+        data_type: varchar
+        description: ""
+
+      - name: proper_timestamp
+        data_type: timestamp_ntz
+        description: ""
+

@@ -1,0 +1,42 @@
+pumps:
+  - model: sales_data
+    timestamp_column: modified_at
+    sensitive: False
+    single: True
+    stage: s3_sales_data
+    owner: '@data_eng_team'
+
+  - model: customer_feedback
+    timestamp_column: feedback_date
+    sensitive: True
+    single: False
+    stage: s3_sensitive_data
+    owner: '@customer_team'
+
+  - model: product_usage_stats
+    timestamp_column: last_activity
+    sensitive: False
+    single: False
+    stage: s3_usage_stats
+    owner: '@product_team'
+
+  - model: user_activity_log
+    timestamp_column: activity_date
+    sensitive: True
+    single: True
+    stage: s3_activity_logs
+    owner: '@analytics_team'
+
+  - model: churn_analysis
+    timestamp_column: null
+    sensitive: True
+    single: True
+    stage: s3_churn_analysis
+    owner: '@data_science_team'
+
+  - model: financial_reports
+    timestamp_column: report_date
+    sensitive: False
+    single: False
+    stage: s3_financial_reports
+    owner: '@finance_team'

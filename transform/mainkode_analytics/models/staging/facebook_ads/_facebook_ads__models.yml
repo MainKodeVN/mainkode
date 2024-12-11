@@ -1,0 +1,66 @@
+version: 2
+
+models:
+  - name: stgs_facebook_ads__insights_country
+    description: ""
+    columns:
+      - name: _airbyte_raw_id
+        data_type: number
+        description: ""
+
+      - name: _airbyte_extracted_at
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: cpc
+        data_type: number
+        description: ""
+
+      - name: cpm
+        data_type: number
+        description: ""
+
+      - name: cpp
+        data_type: number
+        description: ""
+
+      - name: ctr
+        data_type: number
+        description: ""
+
+      - name: ad_id
+        data_type: varchar
+        description: ""
+
+      - name: reach
+        data_type: number
+        description: ""
+
+      - name: spend
+        data_type: number
+        description: ""
+
+      - name: clicks
+        data_type: number
+        description: ""
+
+      - name: ad_name
+        data_type: varchar
+        description: ""
+
+      - name: country
+        data_type: varchar
+        description: ""
+
+      - name: date_stop
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: created_time
+        data_type: timestamp_ntz
+        description: ""
+
+      - name: cost_per_unique_click
+        data_type: number
+        description: ""
+

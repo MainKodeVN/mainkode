@@ -1,0 +1,122 @@
+name: dbt-slim
+
+on:
+  pull_request:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-west-1
+  DBT_PROFILES_DIR: ${{ github.workspace }}/transform/mainkode_analytics/profiles
+  DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
+  DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
+  SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+  SNOWFLAKE_TRANSFORM_USER: ${{ secrets.SNOWFLAKE_USER }}
+  SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
+  SNOWFLAKE_TRANSFORM_ROLE: ${{ secrets.SNOWFLAKE_ROLE }}
+
+jobs:
+  lint:
+    name: SQL Linting with SQLFluff
+    runs-on: ubuntu-latest
+    environment: dbt-dev
+    env:
+      SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_DEV }}
+      SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_TRANSFORM_WAREHOUSE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          pip install sqlfluff==3.2.4
+          pip install sqlfluff-templater-dbt==3.2.4
+          pip install dbt-core==1.8.7
+          pip install dbt-snowflake==1.8.3
+          
+      - name: Run SQLFluff Linting
+        run: |
+          cd ${{ env.DBT_PROJECT_DIR }} && dbt deps && make lint-changed-new BRANCH=origin/master
+
+  clone-and-test:
+    name: Clone Database and Run dbt Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    environment: dbt-dev
+    env:
+      SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_DEV }}
+      SNOWFLAKE_TRANSFORM_DATABASE_PROD: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_PROD }}
+      SNOWFLAKE_TRANSFORM_DATABASE_CLONE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+      SNOWFLAKE_RAW_DATABASE_PROD: ${{ vars.SNOWFLAKE_RAW_DATABASE_PROD }}
+      SNOWFLAKE_RAW_DATABASE_CLONE: ${{ vars.SNOWFLAKE_RAW_DATABASE_CLONE }}
+      SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_TRANSFORM_WAREHOUSE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Clone Raw and Analytics Databases to Temporary CI Environment
+        run: |
+          cd  ${{ github.workspace }}/utils/db
+          python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }} ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_PROD }}
+          python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }} ${{ env.SNOWFLAKE_RAW_DATABASE_PROD }}
+
+      - name: Download dbt manifest
+        run: aws s3 cp ${{ env.DBT_ARTIFACT_PATH }} ${{ github.workspace }}
+
+      - name: Install dbt dependencies
+        env:
+          SNOWFLAKE_TRANSFORM_DATABASE: ${{env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: |
+          dbt deps --project-dir=${{ env.DBT_PROJECT_DIR }}
+
+      - name: Build modified dbt models and its first-order children
+        run: |
+          dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=ci \
+            --select state:modified+ --defer --state ${{ github.workspace }} --vars '{schema: CI_SCHEMA_${{ env.PR_NUMBER }}}' --target=ci
+
+      - name: Drop Clone Raw and Analytics Databases 
+        run: |
+          cd  ${{ github.workspace }}/utils/db
+          python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+          python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }}

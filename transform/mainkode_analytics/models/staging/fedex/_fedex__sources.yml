@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: fedex
+    database: |
+      {%- if  target.name == "dev" -%} raw_dev
+      {%- elif target.name == "ci"  -%} raw_clone
+      {%- elif target.name == "pre-prod"  -%} raw_preprod
+      {%- elif target.name == "prod"  -%} raw_prod
+      {%- else -%} invalid_database
+      {%- endif -%}
+    tables:
+      - name: shipping_fedex_shipping_cost
+        columns:
+          - name: _airbyte_raw_id
+            data_type: number
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: netchargeamountbilledcurrency
+            data_type: varchar
+          - name: shipmenttrackingnumber
+            data_type: varchar
+          - name: recipientcountry
+            data_type: varchar
+          - name: servicedesc
+            data_type: varchar
+          - name: shipmentdate
+            data_type: varchar
+

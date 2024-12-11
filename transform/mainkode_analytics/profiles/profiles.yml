@@ -1,0 +1,41 @@
+mainkode:
+  outputs:
+    pre-prod:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_TRANSFORM_DATABASE') }}"
+      password: "{{ env_var('SNOWFLAKE_TRANSFORM_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_TRANSFORM_ROLE') }}"
+      schema: analytics
+      threads: 4
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_TRANSFORM_USER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
+    prod:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_TRANSFORM_DATABASE') }}"
+      password: "{{ env_var('SNOWFLAKE_TRANSFORM_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_TRANSFORM_ROLE') }}"
+      schema: analytics
+      threads: 4
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_TRANSFORM_USER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
+    ci:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_TRANSFORM_DATABASE') }}"
+      password: "{{ env_var('SNOWFLAKE_TRANSFORM_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_TRANSFORM_ROLE') }}"
+      schema: "{{ var('schema') }}"
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_TRANSFORM_USER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
+    lint:
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+      database: "{{ env_var('SNOWFLAKE_TRANSFORM_DATABASE') }}"
+      password: "{{ env_var('SNOWFLAKE_TRANSFORM_PASSWORD') }}"
+      role: "{{ env_var('SNOWFLAKE_TRANSFORM_ROLE') }}"
+      schema: 'INFORMATION_SCHEMA'
+      type: snowflake
+      user: "{{ env_var('SNOWFLAKE_TRANSFORM_USER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_TRANSFORM_WAREHOUSE') }}"
+  target: lint

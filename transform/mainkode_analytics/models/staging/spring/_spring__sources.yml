@@ -1,0 +1,31 @@
+version: 2
+
+sources:
+  - name: spring
+    database: |
+      {%- if  target.name == "dev" -%} raw_dev
+      {%- elif target.name == "ci"  -%} raw_clone
+      {%- elif target.name == "pre-prod"  -%} raw_preprod
+      {%- elif target.name == "prod"  -%} raw_prod
+      {%- else -%} invalid_database
+      {%- endif -%}
+    tables:
+      - name: shipping_spring_shipping
+        columns:
+          - name: _airbyte_raw_id
+            data_type: number
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: _airbyte_meta
+            data_type: variant
+          - name: net_amount_euro
+            data_type: varchar
+          - name: tracking_number
+            data_type: varchar
+          - name: recipient_country
+            data_type: varchar
+          - name: service_description
+            data_type: varchar
+          - name: shipment_date_dd_mm_yyyy
+            data_type: varchar
+

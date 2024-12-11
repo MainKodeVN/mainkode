@@ -1,0 +1,230 @@
+version: 2
+
+sources:
+  - name: shopify
+    database: |
+      {%- if  target.name == "dev" -%} raw_dev
+      {%- elif target.name == "ci"  -%} raw_clone
+      {%- elif target.name == "pre-prod"  -%} raw_preprod
+      {%- elif target.name == "prod"  -%} raw_prod
+      {%- else -%} invalid_database
+      {%- endif -%}
+    tables:
+      - name: shopify_balance_transactions
+        columns:
+          - name: id
+            data_type: number
+          - name: source_order_id
+            data_type: number
+          - name: fee
+            data_type: number
+          - name: net
+            data_type: number
+          - name: amount
+            data_type: number
+          - name: type
+            data_type: varchar
+
+      - name: shopify_customers
+        columns:
+          - name: id
+            data_type: number
+          - name: first_name
+            data_type: varchar
+          - name: last_name
+            data_type: varchar
+          - name: email
+            data_type: varchar
+          - name: created_at
+            data_type: timestamp_ntz
+
+      - name: shopify_fulfillments
+        columns:
+          - name: id
+            data_type: number
+          - name: order_id
+            data_type: number
+          - name: tracking_number
+            data_type: varchar
+          - name: tracking_company
+            data_type: varchar
+
+      - name: shopify_orders
+        columns:
+          - name: id
+            data_type: number
+          - name: contact_email
+            data_type: varchar
+          - name: payment_terms
+            data_type: varchar
+          - name: total_tax_set
+            data_type: variant
+          - name: checkout_token
+            data_type: varchar
+          - name: client_details
+            data_type: variant
+          - name: discount_codes
+            data_type: variant
+          - name: referring_site
+            data_type: varchar
+          - name: shipping_lines
+            data_type: variant
+          - name: subtotal_price
+            data_type: number
+          - name: taxes_included
+            data_type: boolean
+          - name: billing_address
+            data_type: variant
+          - name: customer_locale
+            data_type: varchar
+          - name: deleted_message
+            data_type: varchar
+          - name: estimated_taxes
+            data_type: boolean
+          - name: note_attributes
+            data_type: variant
+          - name: total_discounts
+            data_type: number
+          - name: total_price_set
+            data_type: variant
+          - name: gross_sales_eur
+            data_type: number
+          - name: gross_sales_lc
+            data_type: number
+          - name: gross_sales_lc_id
+            data_type: varchar
+          - name: total_price_usd
+            data_type: number
+          - name: financial_status
+            data_type: varchar
+          - name: landing_site_ref
+            data_type: varchar
+          - name: order_status_url
+            data_type: varchar
+          - name: shipping_address
+            data_type: variant
+          - name: country_code
+            data_type: varchar
+          - name: created_at
+            data_type: timestamp_ntz
+          - name: closed_at
+            data_type: timestamp_ntz
+          - name: current_total_tax
+            data_type: number
+          - name: source_identifier
+            data_type: varchar
+          - name: total_outstanding
+            data_type: number
+          - name: fulfillment_status
+            data_type: varchar
+          - name: subtotal_price_set
+            data_type: variant
+          - name: total_tip_received
+            data_type: number
+          - name: confirmation_number
+            data_type: varchar
+          - name: current_total_price
+            data_type: number
+          - name: deleted_description
+            data_type: varchar
+          - name: total_discounts_set
+            data_type: variant
+          - name: admin_graphql_api_id
+            data_type: varchar
+          - name: discount_allocations
+            data_type: variant
+          - name: presentment_currency
+            data_type: varchar
+          - name: current_total_tax_set
+            data_type: variant
+          - name: discount_applications
+            data_type: variant
+          - name: payment_gateway_names
+            data_type: variant
+          - name: current_subtotal_price
+            data_type: number
+          - name: total_line_items_price
+            data_type: number
+          - name: buyer_accepts_marketing
+            data_type: boolean
+          - name: current_total_discounts
+            data_type: number
+          - name: current_total_price_set
+            data_type: variant
+          - name: current_total_duties_set
+            data_type: variant
+          - name: total_shipping_price_set
+            data_type: variant
+          - name: merchant_of_record_app_id
+            data_type: varchar
+          - name: original_total_duties_set
+            data_type: variant
+          - name: current_subtotal_price_set
+            data_type: variant
+          - name: total_line_items_price_set
+            data_type: variant
+          - name: current_total_discounts_set
+            data_type: variant
+          - name: current_total_additional_fees_set
+            data_type: variant
+          - name: original_total_additional_fees_set
+            data_type: variant
+          - name: line_items
+            data_type: variant
+
+      - name: shopify_products
+        columns:
+          - name: _airbyte_raw_id
+            data_type: number
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: id
+            data_type: number
+          - name: tags
+            data_type: variant
+          - name: title
+            data_type: varchar
+          - name: handle
+            data_type: varchar
+          - name: status
+            data_type: varchar
+          - name: options
+            data_type: variant
+          - name: created_at
+            data_type: timestamp_ntz
+          - name: deleted_at
+            data_type: timestamp_ntz
+          - name: updated_at
+            data_type: timestamp_ntz
+          - name: product_type
+            data_type: varchar
+          - name: published_at
+            data_type: timestamp_ntz
+          - name: published_scope
+            data_type: varchar
+          - name: template_suffix
+            data_type: varchar
+
+      - name: shopify_transactions
+        columns:
+          - name: _airbyte_raw_id
+            data_type: varchar
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: id
+            data_type: number
+          - name: order_id
+            data_type: number
+          - name: kind
+            data_type: varchar
+          - name: status
+            data_type: varchar
+          - name: gateway
+            data_type: varchar
+          - name: amount
+            data_type: number
+          - name: created_at
+            data_type: timestamp_ntz
+          - name: cleaned_receipt
+            data_type: variant
+

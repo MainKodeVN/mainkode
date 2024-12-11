@@ -1,0 +1,45 @@
+version: 2
+
+sources:
+  - name: facebook_ads
+    database: |
+      {%- if  target.name == "dev" -%} raw_dev
+      {%- elif target.name == "ci"  -%} raw_clone
+      {%- elif target.name == "pre-prod"  -%} raw_preprod
+      {%- elif target.name == "prod"  -%} raw_prod
+      {%- else -%} invalid_database
+      {%- endif -%}
+    tables:
+      - name: facebook_ads_insights_country
+        columns:
+          - name: _airbyte_raw_id
+            data_type: number
+          - name: _airbyte_extracted_at
+            data_type: timestamp_ntz
+          - name: cpc
+            data_type: number
+          - name: cpm
+            data_type: number
+          - name: cpp
+            data_type: number
+          - name: ctr
+            data_type: number
+          - name: ad_id
+            data_type: varchar
+          - name: reach
+            data_type: number
+          - name: spend
+            data_type: number
+          - name: clicks
+            data_type: number
+          - name: ad_name
+            data_type: varchar
+          - name: country
+            data_type: varchar
+          - name: date_stop
+            data_type: timestamp_ntz
+          - name: created_time
+            data_type: timestamp_ntz
+          - name: cost_per_unique_click
+            data_type: number
+

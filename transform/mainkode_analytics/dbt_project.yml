@@ -36,12 +36,11 @@ models:
       +materialized: view
       +schema: "staging"
       tags: ['staging']
-
     # Intermediate Layer
-    # intermediate:
-    #   +materialized: ephemeral
-    #   +schema: "intermediate"
-    #   tags: ['intermediate']
+    intermediate:
+      +materialized: ephemeral
+      +schema: "intermediate"
+      tags: ['intermediate']
 
     # # Marts Layer
     # marts:

@@ -2,17 +2,17 @@
 
 WITH paypal_fee AS (
   SELECT *
-  FROM {{ ref('int_paypal_fees_from_shop_transactions') }}
+  FROM {{ ref('int_paypal_fees_calculated') }}
 ),
 
 shop_fee AS (
   SELECT *
-  FROM {{ ref('int_shop_fees_from_shop_transactions') }}
+  FROM {{ ref('int_shop_fees_calculated') }}
 ),
 
 klarna_fee AS (
   SELECT *
-  FROM {{ ref('int_klarna_fees_from_shop_transactions') }}
+  FROM {{ ref('int_klarna_fees_calculated') }}
 )
 
 SELECT

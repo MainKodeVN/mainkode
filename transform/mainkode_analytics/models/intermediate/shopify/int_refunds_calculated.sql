@@ -13,7 +13,7 @@ Logic:
 
 WITH order_tab AS (
   SELECT *
-  FROM {{ (ref('int_ecomm_orders')) }}
+  FROM {{ (ref('int_orders_filtered')) }}
 ),
 
 refund_tab AS (

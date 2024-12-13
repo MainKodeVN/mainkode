@@ -17,7 +17,7 @@ calc_klarna_fees AS (
     order_id, -- Associated order ID
     amount, -- Gross sales amount for the transaction in EUR
     created_at, -- Transaction timestamp
-    0.35 + 0.05 * amount AS commision_fee_eur
+    0.35 + 0.05 * amount AS klarna_commision_fee_eur
   -- Calculate Klarna's commission fee as €0.35 base fee + 5% of the transaction amount
   FROM klarna_fees
   WHERE kind = 'SALE' AND gateway = 'Klarna' AND status = 'SUCCESS'

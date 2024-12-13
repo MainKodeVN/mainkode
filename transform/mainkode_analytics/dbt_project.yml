@@ -35,14 +35,15 @@ models:
     staging:
       +materialized: view
       +schema: "staging"
-      tags: ['staging']
-
+      tags: ['staging','hourly']
     # Intermediate Layer
-    # intermediate:
-    #   +materialized: ephemeral
-    #   +schema: "intermediate"
-    #   tags: ['intermediate']
-
+    intermediate:
+      +materialized: ephemeral
+      tags: ['intermediate']
+      shopify:
+        schema: int_shopify
+        tags: ['nightly']
+  
     # # Marts Layer
     # marts:
     #   +materialized: table

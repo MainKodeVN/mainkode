@@ -9,6 +9,9 @@ WITH your_table AS (
 )
 
 SELECT
+  id,
+  shipping_address,
+  created_at,
   JSON_EXTRACT_PATH_TEXT(
     line_items, 'fulfillable_quantity'
   )                                                       AS fulfillable_quantity,
@@ -74,6 +77,6 @@ WHERE
   ) NOT LIKE '%wholsale%'
   AND LOWER(
     JSON_EXTRACT_PATH_TEXT(line_items, 'name')
-  ) NOT LIKE '%wholsael%'
---we filter out wholesale orders paid on shopify
+  ) NOT LIKE '%wholsale%'
+--We filter out wholesale orders paid on shopify
 --total_price = total_line_items_price - total_discounts + total_shipping_price_set(shop_money/amounts) - refunds (shop_money/amounts)

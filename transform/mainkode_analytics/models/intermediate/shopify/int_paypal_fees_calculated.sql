@@ -1,10 +1,16 @@
 WITH paypal_fees AS (
-  SELECT * FROM {{ ref('stgs_shopify__transactions') }}
+  SELECT
+    gateway,
+    status,
+    amount,
+    fee_amount_currency_id,
+    exchange_rate
+  FROM {{ ref('stgs_shopify__transactions') }}
 ),
 
 orders AS (
   SELECT
-    *,
+    id,
     CASE
       WHEN gross_sales_lc = 0 THEN 1 -- If gross sales in local currency (gross_sales_lc) is 0, set the exchange rate to 1
       ELSE gross_sales_eur / gross_sales_lc -- Otherwise, calculate the exchange rate by dividing gross sales in EUR (gross_sales_eur) by gross sales in local currency (gross_sales_lc)
@@ -32,40 +38,40 @@ paypal_fees_from_orders AS (
 
 calc_paypal_fees AS (
   SELECT
-    id, -- The unique identifier for each PayPal transaction.
+    paypal_fees.id, -- The unique identifier for each PayPal transaction.
     {# kind, -- The type of transaction (e.g., SALE, CAPTURE). #}
-    gateway, -- The payment gateway used (in this case, PayPal).
-    status, -- The status of the transaction (e.g., SUCCESS).
+    paypal_fees.gateway, -- The payment gateway used (in this case, PayPal).
+    paypal_fees.status, -- The status of the transaction (e.g., SUCCESS).
     paypal_fees.order_id, -- The order ID associated with the transaction.
-    amount, -- The total revenue from the order as provided to the customer by Shopify, in EUR.
-    settle_amount, -- The net amount in EUR after deducting PayPal fees and currency conversion fees.
-    fee_amount_currency_id, -- The currency in which PayPal's fee was charged (e.g., USD, EUR).
+    paypal_fees.amount, -- The total revenue from the order as provided to the customer by Shopify, in EUR.
+    paypal_fees.settle_amount, -- The net amount in EUR after deducting PayPal fees and currency conversion fees.
+    paypal_fees.fee_amount_currency_id, -- The currency in which PayPal's fee was charged (e.g., USD, EUR).
     --fee_amount_local_currency, -- (Optional) The PayPal fee in local currency; commented out for now.
     --exchange_rate, -- (Optional) PayPal-provided exchange rate; commented out for now.
     paypal_fees_from_orders.exchange_rate_cleaned, -- The cleaned exchange rate determined earlier in the 'paypal_fees_from_orders' CTE.
-    created_at, -- The timestamp when the transaction occurred.
+    paypal_fees.created_at, -- The timestamp when the transaction occurred.
 
     -- Calculate the PayPal commission fee in EUR
     CASE
-      WHEN exchange_rate_cleaned IS NULL AND fee_amount_currency_id = 'EUR' THEN fee_amount_local_currency
+      WHEN paypal_fees_from_orders.exchange_rate_cleaned IS NULL AND paypal_fees.fee_amount_currency_id = 'EUR' THEN paypal_fees.fee_amount_local_currency
       -- If no exchange rate is provided and the fee is in EUR, use the local currency fee directly.
 
-      WHEN exchange_rate_cleaned IS NOT NULL AND fee_amount_currency_id = 'EUR' THEN fee_amount_local_currency
+      WHEN paypal_fees_from_orders.exchange_rate_cleaned IS NOT NULL AND paypal_fees.fee_amount_currency_id = 'EUR' THEN paypal_fees.fee_amount_local_currency
       -- If an exchange rate is provided but the fee is already in EUR, use the local currency fee as is.
 
-      WHEN exchange_rate_cleaned IS NOT NULL AND fee_amount_currency_id <> 'EUR' THEN fee_amount_local_currency * paypal_fees_from_orders.exchange_rate_cleaned
+      WHEN paypal_fees_from_orders.exchange_rate_cleaned IS NOT NULL AND paypal_fees.fee_amount_currency_id <> 'EUR' THEN paypal_fees.fee_amount_local_currency * paypal_fees_from_orders.exchange_rate_cleaned
       -- If the fee is in a foreign currency, convert it to EUR using the cleaned exchange rate.
     END AS paypal_commision_fee_eur, -- Store the calculated commission fee as 'paypal_commision_fee_eur'.
 
     -- Calculate the PayPal conversion fee in EUR
     CASE
-      WHEN fee_amount_currency_id = 'EUR' THEN 0
+      WHEN paypal_fees.fee_amount_currency_id = 'EUR' THEN 0
       -- If the fee is already in EUR, there is no conversion fee.
 
-      WHEN fee_amount_currency_id <> 'EUR' AND exchange_rate IS NULL THEN (0.0311 * amount)
+      WHEN paypal_fees.fee_amount_currency_id <> 'EUR' AND paypal_fees.exchange_rate IS NULL THEN (0.0311 * paypal_fees.amount)
       -- If the fee is in a foreign currency and no exchange rate is available, assume a 3.11% conversion fee on the total amount.
 
-      WHEN fee_amount_currency_id <> 'EUR' AND exchange_rate IS NOT NULL THEN (amount - (fee_amount_local_currency * paypal_fees_from_orders.exchange_rate_cleaned) - settle_amount)
+      WHEN paypal_fees.fee_amount_currency_id <> 'EUR' AND paypal_fees.exchange_rate IS NOT NULL THEN (paypal_fees.amount - (paypal_fees.fee_amount_local_currency * paypal_fees_from_orders.exchange_rate_cleaned) - paypal_fees.settle_amount)
       -- If the fee is in a foreign currency and an exchange rate is provided, calculate the hidden conversion fee as:
       -- Total revenue (amount) minus the converted fee and the settled amount.
       -- Conversion Fee = Total Revenue (amount) - Converted Fee (fee_amount_local_currency * exchange_rate_cleaned) - Settled Amount (settle_amount)
@@ -73,7 +79,7 @@ calc_paypal_fees AS (
   FROM paypal_fees
   LEFT JOIN paypal_fees_from_orders
     ON paypal_fees.order_id = paypal_fees_from_orders.order_id
-  WHERE gateway = 'paypal' AND status = 'SUCCESS'
+  WHERE paypal_fees.gateway = 'paypal' AND paypal_fees.status = 'SUCCESS'
 
 )
 

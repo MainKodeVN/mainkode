@@ -12,7 +12,7 @@ Logic:
 */
 
 WITH order_tab AS (
-  SELECT *
+  SELECT id
   FROM {{ (ref('int_orders_filtered')) }}
 ),
 
@@ -32,7 +32,7 @@ refund_tab AS (
 refund_orders AS (
   SELECT
     order_tab.id, -- Order ID
-    COALESCE(refund_amount_eur, 0) AS refund_amount_eur -- Cleaned refund amount
+    COALESCE(refund_tab.refund_amount_eur, 0) AS refund_amount_eur -- Cleaned refund amount
   FROM order_tab
   LEFT JOIN refund_tab ON order_tab.id = refund_tab.order_id
 )

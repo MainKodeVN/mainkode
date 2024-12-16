@@ -38,7 +38,7 @@ mkdir -p "$target_directory" || { echo "Error: Could not create directory $targe
 # Generate the base models for each table
 IFS=',' read -ra tables <<< "$table_names"
 for table_name in "${tables[@]}"; do
-    base_model_output_file="$target_directory/stgs_${schema_name}__${table_name}.sql"
+    base_model_output_file="$target_directory/stg_${schema_name}__${table_name}.sql"
     
     dbt --quiet run-operation generate_base_model --no-use-colors --args "{\"source_name\": \"$schema_name\", \"table_name\": \"$table_name\"}" > "$base_model_output_file"
     

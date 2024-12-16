@@ -1,5 +1,5 @@
 WITH cleaned_spring AS (
-  SELECT * FROM {{ ref('stgs_spring__shipping_cost') }}
+  SELECT * FROM {{ ref('stg_spring__shipping_cost') }}
 ),
 
 agg_spring_costs AS (

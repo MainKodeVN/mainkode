@@ -12,7 +12,7 @@ merged_shipping_services AS (
     'FEDEX'                   AS shipping_service,
     recipient_country,
     proper_timestamp          AS cleaned_timestamp
-  FROM {{ ref('stgs_fedex__shipping_cost') }}
+  FROM {{ ref('stg_fedex__shipping_cost') }}
 
   UNION ALL
 
@@ -33,5 +33,5 @@ SELECT
   merged_shipping_services.recipient_country,
   shopify_fulfillments.tracking_company
 FROM {{ ref('int_orders_filtered') }} AS orders_filtered
-LEFT JOIN {{ ref('stgs_shopify__fulfillments') }} AS shopify_fulfillments ON orders_filtered.id = shopify_fulfillments.order_id
+LEFT JOIN {{ ref('stg_shopify__fulfillments') }} AS shopify_fulfillments ON orders_filtered.id = shopify_fulfillments.order_id
 LEFT JOIN merged_shipping_services ON shopify_fulfillments.tracking_number = merged_shipping_services.tracking_number

@@ -6,6 +6,6 @@ Our intermediary e-commerce order line items table where we clean out data:
 */
 
 SELECT *
-FROM {{ ref('stgs_shopify__orderlineitems') }}
+FROM {{ ref('stg_shopify__orderlineitems') }}
 WHERE shipping_address IS NOT NULL -- Include only rows where the shipping address is not NULL (filter out wholesale or incomplete orders)
   AND product_name NOT LIKE '%wholesale%' -- Exclude rows where the 'name' column contains the word 'wholesale' (case-insensitive match)

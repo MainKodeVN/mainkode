@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stgs_spring__shipping_cost
+  - name: stg_spring__shipping_cost
     description: ""
     columns:
       - name: _airbyte_raw_id

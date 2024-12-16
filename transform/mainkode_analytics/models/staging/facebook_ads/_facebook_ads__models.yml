@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stgs_facebook_ads__insights_country
+  - name: stg_facebook_ads__insights_country
     description: ""
     columns:
       - name: _airbyte_raw_id

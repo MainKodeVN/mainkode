@@ -6,7 +6,7 @@ WITH calc_shop_fees AS (
     fee             AS shopify_commission_fees_eur, -- The Shopify commission fee for the transaction.
     amount          AS amount_eur, -- The total revenue (gross amount) for the order.
     net             AS net_revenue_after_shop_fees_eur -- The remaining revenue after Shopify's commission fee is deducted.
-  FROM {{ ref('stgs_shopify__balance_transactions') }}
+  FROM {{ ref('stg_shopify__balance_transactions') }}
   WHERE type = 'charge'
   {#
     type: Indicates the type of transaction:

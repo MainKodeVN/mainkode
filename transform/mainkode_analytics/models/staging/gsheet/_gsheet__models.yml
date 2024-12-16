@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stgs_gsheet__eu_vat_rates
+  - name: stg_gsheet__eu_vat_rates
     description: ""
     columns:
       - name: _airbyte_raw_id
@@ -28,7 +28,7 @@ models:
         data_type: varchar
         description: ""
 
-  - name: stgs_gsheet__sku_list_cost
+  - name: stg_gsheet__sku_list_cost
     description: ""
     columns:
       - name: _airbyte_raw_id

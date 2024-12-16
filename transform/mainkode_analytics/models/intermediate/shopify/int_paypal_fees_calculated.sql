@@ -5,7 +5,7 @@ WITH paypal_fees AS (
     amount,
     fee_amount_currency_id,
     exchange_rate
-  FROM {{ ref('stgs_shopify__transactions') }}
+  FROM {{ ref('stg_shopify__transactions') }}
 ),
 
 orders AS (

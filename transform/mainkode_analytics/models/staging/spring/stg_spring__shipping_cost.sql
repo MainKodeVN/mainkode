@@ -12,10 +12,7 @@ renamed AS (
     _airbyte_meta,
     CAST(REPLACE(net_amount_euro, ',', '.') AS DECIMAL)             AS net_amount_euro,
     tracking_number,
-    CASE
-      WHEN tracking_number LIKE '%/%' THEN REGEXP_SUBSTR(tracking_number, '^(.*?)/')
-      ELSE tracking_number
-    END                                                             AS cleaned_tracking_number,
+    SPLIT_PART(tracking_number, '/', 1)                             AS cleaned_tracking_number,
     recipient_country,
     service_description,
     TO_TIMESTAMP(shipment_date_dd_mm_yyyy, 'DD/MM/YYYY HH24.MI.SS') AS proper_timestamp

@@ -5,7 +5,7 @@
 
 WITH klarna_fees AS (
   SELECT *
-  FROM {{ ref('stgs_shopify__transactions') }}
+  FROM {{ ref('stg_shopify__transactions') }}
 ),
 
 calc_klarna_fees AS (

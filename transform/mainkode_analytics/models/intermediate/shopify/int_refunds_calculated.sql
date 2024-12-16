@@ -24,7 +24,7 @@ refund_tab AS (
     status, -- Status of the refund (e.g., SUCCESS, PENDING)
     COALESCE(amount, 0) AS refund_amount_eur, -- Store the cleaned refund amount
     created_at -- Timestamp of the refund transaction
-  FROM {{ (ref('stgs_shopify__transactions')) }}
+  FROM {{ (ref('stg_shopify__transactions')) }}
   WHERE kind = 'REFUND' -- Filter for refund transactions
     AND (status = 'SUCCESS' OR status = 'PENDING') -- Include only successful or pending refunds
 ),

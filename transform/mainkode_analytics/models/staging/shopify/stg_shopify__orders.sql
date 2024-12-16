@@ -33,7 +33,7 @@ renamed AS (
     landing_site_ref,
     order_status_url,
     shipping_address,
-    JSON_EXTRACT_PATH_TEXT(shipping_address, 'country_code')                             AS country_code,
+    JSON_EXTRACT_PATH_TEXT(billing_address, 'country')                                   AS country_code,
     created_at, --Order date
     closed_at,
     current_total_tax,

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stgs_shopify__balance_transactions
+  - name: stg_shopify__balance_transactions
     description: ""
     columns:
       - name: id
@@ -34,7 +34,7 @@ models:
         data_type: varchar
         description: ""
 
-  - name: stgs_shopify__customers
+  - name: stg_shopify__customers
     description: ""
     columns:
       - name: id
@@ -60,7 +60,7 @@ models:
         data_type: timestamp_ntz
         description: ""
 
-  - name: stgs_shopify__fulfillments
+  - name: stg_shopify__fulfillments
     description: ""
     columns:
       - name: id
@@ -85,7 +85,7 @@ models:
         data_type: varchar
         description: ""
 
-  - name: stgs_shopify__orderlineitems
+  - name: stg_shopify__orderlineitems
     description: ""
     columns:
       - name: fulfillable_quantity
@@ -199,7 +199,7 @@ models:
         data_type: varchar
         description: ""
 
-  - name: stgs_shopify__orders
+  - name: stg_shopify__orders
     description: ""
     columns:
       - name: id
@@ -441,7 +441,7 @@ models:
         data_type: variant
         description: ""
 
-  - name: stgs_shopify__products
+  - name: stg_shopify__products
     description: ""
     columns:
       - name: _airbyte_raw_id
@@ -507,7 +507,7 @@ models:
         data_type: varchar
         description: ""
 
-  - name: stgs_shopify__transactions
+  - name: stg_shopify__transactions
     description: ""
     columns:
       - name: _airbyte_raw_id

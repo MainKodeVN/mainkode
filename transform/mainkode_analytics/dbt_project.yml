@@ -43,6 +43,9 @@ models:
       shopify:
         schema: int_shopify
         tags: ['nightly']
+      shipping_cost:
+        schema: int_shipping_cost
+        tags: ['nightly']
   
     # # Marts Layer
     # marts:

@@ -1,9 +1,3 @@
-{{
-   config(
-    materialized='table'
-)
-}}
-
 WITH
 merged_shipping_services AS (
   SELECT

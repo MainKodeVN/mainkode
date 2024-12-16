@@ -15,7 +15,8 @@ env:
   AWS_REGION: us-west-1
   DBT_PROFILES_DIR: ${{ github.workspace }}/transform/mainkode_analytics/profiles
   DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
-  DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
+  DBT_ARTIFACT_PATH: ${{ github.workspace }}/transform/mainkode_analytics/target/manifest.json
+  S3_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/ci/manifest.json
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   SNOWFLAKE_TRANSFORM_USER: ${{ secrets.SNOWFLAKE_USER }}
   SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
@@ -38,7 +39,8 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
+          cache: 'pip'
 
       - name: Create and start virtual environment
         run: |
@@ -78,11 +80,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
+          cache: 'pip'
 
       - name: Install dependencies
         run: |
@@ -101,21 +99,26 @@ jobs:
           python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }} ${{ env.SNOWFLAKE_RAW_DATABASE_PROD }}
 
       - name: Download dbt manifest
-        run: aws s3 cp ${{ env.DBT_ARTIFACT_PATH }} ${{ github.workspace }}
+        run: aws s3 cp ${{ env.S3_ARTIFACT_PATH }} ${{ github.workspace }}
 
       - name: Install dbt dependencies
         env:
           SNOWFLAKE_TRANSFORM_DATABASE: ${{env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
-          PR_NUMBER: ${{ github.event.number }}
         run: |
           dbt deps --project-dir=${{ env.DBT_PROJECT_DIR }}
 
       - name: Build modified dbt models and its first-order children
+        env:
+          SNOWFLAKE_TRANSFORM_DATABASE: ${{env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
         run: |
           dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=ci \
-            --select state:modified+ --defer --state ${{ github.workspace }} --vars '{schema: CI_SCHEMA_${{ env.PR_NUMBER }}}' --target=ci
+            --select state:modified+ --defer --state ${{ github.workspace }} --vars '{schema: CI_SCHEMA_${{ github.event.number }}}' --target=ci
 
-      - name: Drop Clone Raw and Analytics Databases 
+      - name: Upload dbt manifest
+        run: aws s3 cp ${{ env.DBT_ARTIFACT_PATH }} ${{ env.S3_ARTIFACT_PATH }}
+
+      - name: Drop Clone Raw and Analytics Databases
+        if: always()
         run: |
           cd  ${{ github.workspace }}/utils/db
           python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}

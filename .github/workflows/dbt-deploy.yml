@@ -17,7 +17,6 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   DBT_PROFILES_DIR: ${{ github.workspace }}/transform/mainkode_analytics/profiles
   DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
-  S3_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   SNOWFLAKE_TRANSFORM_USER: ${{ secrets.SNOWFLAKE_USER }}
   SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
@@ -112,6 +111,8 @@ jobs:
         with:
           push: true
           tags: shrestic/dbt-image:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/ci
           file: ${{ github.workspace }}/Dockerfile.prod
           secret-files: |

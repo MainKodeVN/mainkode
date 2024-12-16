@@ -17,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   DBT_PROFILES_DIR: ${{ github.workspace }}/transform/mainkode_analytics/profiles
   DBT_PROJECT_DIR: ${{ github.workspace }}/transform/mainkode_analytics
-  DBT_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
+  S3_ARTIFACT_PATH: s3://s3-dbt-artifacts/manifests/manifest.json
   SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
   SNOWFLAKE_TRANSFORM_USER: ${{ secrets.SNOWFLAKE_USER }}
   SNOWFLAKE_TRANSFORM_PASSWORD: ${{ secrets.SNOWFLAKE_PASSWORD }}
@@ -39,6 +39,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: 'pip'
 
       - name: Create and start virtual environment
         run: |
@@ -74,6 +75,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: 'pip'
 
       - name: Create and start virtual environment
         run: |
@@ -110,10 +112,10 @@ jobs:
         with:
           push: true
           tags: shrestic/dbt-image:latest
-          build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/
+          build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/ci
           file: ${{ github.workspace }}/Dockerfile.prod
           secret-files: |
-            "aws=${{ github.workspace }}/.aws/credentials" 
+            "aws=${{ github.workspace }}/.aws/credentials"
   dbt-docs:
     environment:
       name: dbt-pre-prod

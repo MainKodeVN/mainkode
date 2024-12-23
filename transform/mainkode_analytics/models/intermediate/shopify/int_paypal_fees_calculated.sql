@@ -1,10 +1,15 @@
 WITH paypal_fees AS (
   SELECT
+    id,
+    order_id,
     gateway,
     status,
     amount,
+    settle_amount,
     fee_amount_currency_id,
-    exchange_rate
+    exchange_rate,
+    fee_amount_local_currency,
+    created_at
   FROM {{ ref('stg_shopify__transactions') }}
 ),
 

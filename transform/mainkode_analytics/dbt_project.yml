@@ -34,17 +34,26 @@ models:
     # Staging Layer
     staging:
       +materialized: view
-      +schema: "staging"
+      schema: "staging"
       tags: ['staging','hourly']
     # Intermediate Layer
     intermediate:
-      +materialized: ephemeral
+      +materialized: table
       tags: ['intermediate']
       shopify:
         schema: int_shopify
         tags: ['nightly']
       shipping_cost:
         schema: int_shipping_cost
+        tags: ['nightly']
+      manafacturing_cost:
+        schema: int_manafacturing_cost
+        tags: ['nightly']
+      marketing_cost:
+        schema: int_marketing_cost
+        tags: ['nightly']
+      vat_cost:
+        schema: int_vat_cost
         tags: ['nightly']
   
     # # Marts Layer

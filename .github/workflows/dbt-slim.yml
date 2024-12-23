@@ -92,11 +92,11 @@ jobs:
           role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Clone Raw and Analytics Databases to Temporary CI Environment
-        run: |
-          cd  ${{ github.workspace }}/utils/db
-          python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }} ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_PROD }}
-          python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }} ${{ env.SNOWFLAKE_RAW_DATABASE_PROD }}
+      # - name: Clone Raw and Analytics Databases to Temporary CI Environment
+      #   run: |
+      #     cd  ${{ github.workspace }}/utils/db
+      #     python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }} ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_PROD }}
+      #     python snowflake_cli_helper.py clone ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }} ${{ env.SNOWFLAKE_RAW_DATABASE_PROD }}
 
       - name: Download dbt manifest
         run: aws s3 cp ${{ env.S3_ARTIFACT_PATH }} ${{ github.workspace }}
@@ -117,9 +117,9 @@ jobs:
       - name: Upload dbt manifest
         run: aws s3 cp ${{ env.DBT_ARTIFACT_PATH }} ${{ env.S3_ARTIFACT_PATH }}
 
-      - name: Drop Clone Raw and Analytics Databases
-        if: always()
-        run: |
-          cd  ${{ github.workspace }}/utils/db
-          python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
-          python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }}
+      # - name: Drop Clone Raw and Analytics Databases
+      #   if: always()
+      #   run: |
+      #     cd  ${{ github.workspace }}/utils/db
+      #     python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+      #     python snowflake_cli_helper.py drop ${{ env.SNOWFLAKE_RAW_DATABASE_CLONE }}

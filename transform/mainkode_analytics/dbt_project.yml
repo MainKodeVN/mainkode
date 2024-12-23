@@ -34,7 +34,7 @@ models:
     # Staging Layer
     staging:
       +materialized: view
-      schema: "staging"
+      schema: staging
       tags: ['staging','hourly']
     # Intermediate Layer
     intermediate:
@@ -55,12 +55,13 @@ models:
       vat_cost:
         schema: int_vat_cost
         tags: ['nightly']
-  
-    # # Marts Layer
-    # marts:
-    #   +materialized: table
-    #   +schema: "marts"
-    #   tags: ['marts']
+    # Marts Layer
+    marts:
+      +materialized: table
+      tags: ['marts']
+      finance:
+        schema: mart_finance
+        tags: ['nightly','finance']
 
     # # Reports Layer
     # reports:

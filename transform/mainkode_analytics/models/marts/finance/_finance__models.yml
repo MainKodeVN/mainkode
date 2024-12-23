@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: fact_profitability
+    description: "Aggregated financial metrics for orders"
+    columns:
+      - name: id
+        description: "Unique identifier for each order"
+      - name: total_refund_amount_eur
+        description: "Total refund amount in EUR"
+      - name: gross_revenue_eur
+        description: "Gross revenue in EUR after refunds"
+      - name: vat_fee
+        description: "VAT fee associated with the order"
+      - name: net_revenue_eur
+        description: "Net revenue in EUR after VAT and refunds"
+      - name: marketing_cost
+        description: "Marketing cost per order"
+      - name: manufacturing_cost
+        description: "Total manufacturing costs for the order"
+      - name: shipping_costs
+        description: "Shipping costs for the order"
+      - name: tracking_number
+        description: "Tracking number for the shipment"
+      - name: total_commision_eur
+        description: "Total commission fees in EUR"
+      - name: cogs_eur
+        description: "Cost of goods sold in EUR"
+      - name: total_paypal_fees_eur
+        description: "Total PayPal fees in EUR"
+      - name: shopify_commission_fees_eur
+        description: "Shopify commission fees in EUR"
+      - name: klarna_commission_fees_eur
+        description: "Klarna commission fees in EUR"
+      - name: gross_profit_eur
+        description: "Gross profit in EUR after all costs"

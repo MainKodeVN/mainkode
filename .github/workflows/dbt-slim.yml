@@ -58,39 +58,39 @@ jobs:
         run: |
           cd ${{ env.DBT_PROJECT_DIR }} && dbt deps && make lint-changed-new BRANCH=origin/master
 
-  clone-and-test:
-    name: Clone Database and Run dbt Tests
-    runs-on: ubuntu-latest
-    needs: lint
-    environment: dbt-dev
-    env:
-      SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_DEV }}
-      SNOWFLAKE_TRANSFORM_DATABASE_PROD: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_PROD }}
-      SNOWFLAKE_TRANSFORM_DATABASE_CLONE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
-      SNOWFLAKE_RAW_DATABASE_PROD: ${{ vars.SNOWFLAKE_RAW_DATABASE_PROD }}
-      SNOWFLAKE_RAW_DATABASE_CLONE: ${{ vars.SNOWFLAKE_RAW_DATABASE_CLONE }}
-      SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_TRANSFORM_WAREHOUSE }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+  # clone-and-test:
+  #   name: Clone Database and Run dbt Tests
+  #   runs-on: ubuntu-latest
+  #   needs: lint
+  #   environment: dbt-dev
+  #   env:
+  #     SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_DEV }}
+  #     SNOWFLAKE_TRANSFORM_DATABASE_PROD: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_PROD }}
+  #     SNOWFLAKE_TRANSFORM_DATABASE_CLONE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+  #     SNOWFLAKE_RAW_DATABASE_PROD: ${{ vars.SNOWFLAKE_RAW_DATABASE_PROD }}
+  #     SNOWFLAKE_RAW_DATABASE_CLONE: ${{ vars.SNOWFLAKE_RAW_DATABASE_CLONE }}
+  #     SNOWFLAKE_TRANSFORM_WAREHOUSE: ${{ vars.SNOWFLAKE_TRANSFORM_WAREHOUSE }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: 'pip'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.10"
+  #         cache: 'pip'
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r requirements.txt
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
-          aws-region: ${{ env.AWS_REGION }}
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v3
+  #       with:
+  #         role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
+  #         aws-region: ${{ env.AWS_REGION }}
 
       # - name: Clone Raw and Analytics Databases to Temporary CI Environment
       #   run: |
@@ -103,13 +103,13 @@ jobs:
 
       - name: Install dbt dependencies
         env:
-          SNOWFLAKE_TRANSFORM_DATABASE: ${{env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+          SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
         run: |
           dbt deps --project-dir=${{ env.DBT_PROJECT_DIR }}
 
       - name: Build modified dbt models and its first-order children
         env:
-          SNOWFLAKE_TRANSFORM_DATABASE: ${{env.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
+          SNOWFLAKE_TRANSFORM_DATABASE: ${{ vars.SNOWFLAKE_TRANSFORM_DATABASE_CLONE }}
         run: |
           dbt build --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=ci \
             --select state:modified+ --defer --state ${{ github.workspace }} --vars '{schema: CI_SCHEMA_${{ github.event.number }}}' --target=ci

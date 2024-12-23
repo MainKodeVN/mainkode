@@ -26,4 +26,4 @@ SELECT
   END          AS vat_fee
 FROM order_tab
 LEFT JOIN vat_tab ON order_tab.country_code = vat_tab.country_code AND vat_tab.year = CAST(EXTRACT(YEAR FROM order_tab.created_at) AS STRING)
-LEFT JOIN refund_orders ON order_tab.id = refund_orders.id
+LEFT JOIN refund_orders ON order_tab.id = refund_orders.order_id

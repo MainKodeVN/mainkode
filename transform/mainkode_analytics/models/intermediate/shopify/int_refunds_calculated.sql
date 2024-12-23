@@ -10,9 +10,8 @@ Logic:
   - `kind = 'REFUND'`
   - `status = 'SUCCESS'` or `status = 'PENDING'` (to include pending refunds).
 */
-
 WITH order_tab AS (
-  SELECT id
+  SELECT id AS order_id
   FROM {{ (ref('int_orders_filtered')) }}
 ),
 
@@ -31,14 +30,14 @@ refund_tab AS (
 
 refund_orders AS (
   SELECT
-    order_tab.id, -- Order ID
+    order_tab.order_id,
     COALESCE(refund_tab.refund_amount_eur, 0) AS refund_amount_eur -- Cleaned refund amount
   FROM order_tab
-  LEFT JOIN refund_tab ON order_tab.id = refund_tab.order_id
+  LEFT JOIN refund_tab ON order_tab.order_id = refund_tab.order_id
 )
 
 SELECT
-  id, -- Order ID
+  order_id,
   SUM(refund_amount_eur) AS total_refund_amount_eur -- Calculate the total refund amount for each order
 FROM refund_orders
 GROUP BY 1 -- Group by order ID to aggregate refunds

@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: finance_model
+  - name: fact_profitability
     description: "Aggregated financial metrics for orders"
     columns:
       - name: id

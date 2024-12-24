@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+    paths:
+      - "transform/mainkode_analytics/**/*.sql"
+      - "transform/mainkode_analytics/**/*.yml"
+      - "transform/mainkode_analytics/**/*.json"
   workflow_dispatch:
 
 permissions:

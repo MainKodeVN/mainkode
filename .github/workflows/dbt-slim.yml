@@ -2,6 +2,12 @@ name: dbt-slim
 
 on:
   pull_request:
+    types:
+      - opened
+    paths:
+      - "transform/mainkode_analytics/**/*.sql"
+      - "transform/mainkode_analytics/**/*.yml"
+      - "transform/mainkode_analytics/**/*.json"
     branches:
       - master
 

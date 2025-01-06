@@ -91,10 +91,9 @@ six==1.16.0
 snowflake==0.13.1
 snowflake-connector-python==3.12.3
 snowflake-sqlalchemy==1.6.1
-snowflake._legacy==0.13.1
 snowflake.core==0.13.1
 sortedcontainers==2.4.0
-SQLAlchemy==2.0.36
+SQLAlchemy==1.4.36
 sqlfluff==3.2.5
 sqlfluff-templater-dbt==3.2.5
 sqlparse==0.5.1
@@ -110,3 +109,7 @@ tzdata==2024.2
 uritemplate==4.1.1
 urllib3==1.26.20
 zipp==3.20.2
+apache-airflow==2.10.0
+apache-airflow-providers-cncf-kubernetes==10.1.0
+pytest-mock==3.12.0
+pytest-responses==0.5.1

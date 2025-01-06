@@ -122,7 +122,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/ci
-          file: ${{ github.workspace }}/Dockerfile.prod
+          file: ${{ github.workspace }}/build/Dockerfile.prod
           secret-files: |
             "aws=${{ github.workspace }}/.aws/credentials"
   dbt-docs:

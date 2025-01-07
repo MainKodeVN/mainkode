@@ -1,11 +1,8 @@
-"""
-Simplified file containing Kubernetes secrets for use across multiple Airflow DAGs.
-"""
+from airflow.providers.cncf.kubernetes.secret import Secret
 
-from airflow.kubernetes.secret import Secret
-
-# Snowflake Credentials
 SNOWFLAKE_ACCOUNT = Secret("env", "SNOWFLAKE_ACCOUNT", "airflow", "SNOWFLAKE_ACCOUNT")
-SNOWFLAKE_USER = Secret("env", "SNOWFLAKE_USER", "airflow", "SNOWFLAKE_USER")
-SNOWFLAKE_PASSWORD = Secret("env", "SNOWFLAKE_PASSWORD", "airflow", "SNOWFLAKE_PASSWORD")
-
+SNOWFLAKE_TRANSFORM_USER = Secret("env", "SNOWFLAKE_TRANSFORM_USER", "airflow", "SNOWFLAKE_TRANSFORM_USER")
+SNOWFLAKE_TRANSFORM_PASSWORD = Secret("env", "SNOWFLAKE_TRANSFORM_PASSWORD", "airflow", "SNOWFLAKE_TRANSFORM_PASSWORD")
+SNOWFLAKE_TRANSFORM_ROLE = Secret("env", "SNOWFLAKE_TRANSFORM_ROLE", 'airflow', "SNOWFLAKE_TRANSFORM_ROLE")
+SNOWFLAKE_TRANSFORM_WAREHOUSE = Secret("env", "SNOWFLAKE_TRANSFORM_WAREHOUSE", 'airflow', "SNOWFLAKE_TRANSFORM_WAREHOUSE")
+SNOWFLAKE_TRANSFORM_DATABASE = Secret("env", "SNOWFLAKE_TRANSFORM_DATABASE", 'airflow', "SNOWFLAKE_TRANSFORM_DATABASE")

@@ -4,14 +4,16 @@ from airflow.models import Variable
 DBT_IMAGE = "shrestic/dbt-image:latest"
 DEFAULT_AIRFLOW_NAMESPACE = "airflow-dev"
 IS_DEV_MODE = Variable.get("environment")
+S3_MANIFEST_PATH = Variable.get("s3_manifest_path")
+
 # Default settings for all DAGs
 pod_defaults = {
     "get_logs": True,
     "image_pull_policy": "IfNotPresent",
     "log_pod_spec_on_failure": False,
     "in_cluster": True,
-    "on_finish_action": 'delete_pod',
-    "namespace": Variable.get('namespace', DEFAULT_AIRFLOW_NAMESPACE),
+    "on_finish_action": "delete_pod",
+    "namespace": Variable.get("namespace", DEFAULT_AIRFLOW_NAMESPACE),
     "cmds": ["/bin/bash", "-c"],
     "container_resources": k8s.V1ResourceRequirements(
         requests={
@@ -25,11 +27,10 @@ pod_defaults = {
     ),
 }
 
-if IS_DEV_MODE == 'docker-compose':
+if IS_DEV_MODE == "docker-compose":
     # Override defaults for dev mode
     pod_defaults["in_cluster"] = False
     pod_defaults["config_file"] = "/opt/kube/airflow-kube.yaml"
-    
 
 clone_repo_cmd = f"git clone -b master --single-branch --depth 1 https://github.com/MainKodeVN/mainkode.git"
 

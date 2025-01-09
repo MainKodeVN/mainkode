@@ -8,7 +8,7 @@ __pycache__/
 # dbt_utils
 transform/snowflake-dbt/dbt_modules/
 transform/snowflake-dbt/dbt_packages/
-
+utils/db/output/
 # C extensions
 *.so
 

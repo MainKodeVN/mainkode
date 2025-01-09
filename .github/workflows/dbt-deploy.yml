@@ -67,64 +67,64 @@ jobs:
           dbt test --profiles-dir=${{ env.DBT_PROFILES_DIR }} --project-dir=${{ env.DBT_PROJECT_DIR }} --target=pre-prod \
             --select +test_type:unit
 
-  dbt-deploy:
-    runs-on: ubuntu-latest
-    needs: dbt-unit-tests
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  # dbt-deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: dbt-unit-tests
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: 'pip'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: "3.10"
+  #         cache: 'pip'
 
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
+  #     - name: Create and start virtual environment
+  #       run: |
+  #         python -m venv venv
+  #         source venv/bin/activate
 
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+  #     - name: Install dependencies
+  #       run: |
+  #         pip install -r requirements.txt
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
-          aws-region: ${{ env.AWS_REGION }}
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v3
+  #       with:
+  #         role-to-assume: arn:aws:iam::362262895301:role/github-action-s3
+  #         aws-region: ${{ env.AWS_REGION }}
 
-      - name: Configure AWS Credentials for Docker
-        run: |
-            mkdir -p ${{ github.workspace }}/.aws
-            echo "[default]" > ${{ github.workspace }}/.aws/credentials
-            echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> ${{ github.workspace }}/.aws/credentials
-            echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> ${{ github.workspace }}/.aws/credentials
+  #     - name: Configure AWS Credentials for Docker
+  #       run: |
+  #           mkdir -p ${{ github.workspace }}/.aws
+  #           echo "[default]" > ${{ github.workspace }}/.aws/credentials
+  #           echo "aws_access_key_id = $AWS_ACCESS_KEY_ID" >> ${{ github.workspace }}/.aws/credentials
+  #           echo "aws_secret_access_key = $AWS_SECRET_ACCESS_KEY" >> ${{ github.workspace }}/.aws/credentials
   
-            echo "[default]" > ${{ github.workspace }}/.aws/config
-            echo "region = $AWS_REGION" >> ${{ github.workspace }}/.aws/config
+  #           echo "[default]" > ${{ github.workspace }}/.aws/config
+  #           echo "region = $AWS_REGION" >> ${{ github.workspace }}/.aws/config
   
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-            username: ${{ secrets.DOCKER_USERNAME }}
-            password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3
+  #       with:
+  #           username: ${{ secrets.DOCKER_USERNAME }}
+  #           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3      
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3      
             
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          push: true
-          tags: shrestic/dbt-image:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/ci
-          file: ${{ github.workspace }}/Dockerfile.prod
-          secret-files: |
-            "aws=${{ github.workspace }}/.aws/credentials"
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v6
+  #       with:
+  #         push: true
+  #         tags: shrestic/dbt-image:latest
+  #         cache-from: type=gha
+  #         cache-to: type=gha,mode=max
+  #         build-args: S3_TARGET_PATH=s3://s3-dbt-artifacts/manifests/prod
+  #         file: ${{ github.workspace }}/build/Dockerfile.prod
+  #         secret-files: |
+  #           "aws=${{ github.workspace }}/.aws/credentials"
   dbt-docs:
     environment:
       name: dbt-pre-prod

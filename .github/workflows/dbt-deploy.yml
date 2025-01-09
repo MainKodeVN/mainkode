@@ -51,7 +51,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install dbt-core==1.8.7
+          pip install dbt-snowflake==1.8.3
 
       - name: Install dbt dependencies
         run: |
@@ -85,9 +86,10 @@ jobs:
   #         python -m venv venv
   #         source venv/bin/activate
 
-  #     - name: Install dependencies
-  #       run: |
-  #         pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install dbt-core==1.8.7
+          pip install dbt-snowflake==1.8.3
 
   #     - name: Configure AWS credentials
   #       uses: aws-actions/configure-aws-credentials@v3
@@ -150,7 +152,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install dbt-core==1.8.7
+          pip install dbt-snowflake==1.8.3
 
       - name: Generate dbt docs
         id: docs

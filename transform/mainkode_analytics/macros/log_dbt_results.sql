@@ -11,7 +11,7 @@
                         unique_id,
                         database_name,
                         schema_name,
-                        name,
+                        table_name,
                         resource_type,
                         status,
                         execution_time,

@@ -1,5 +1,6 @@
-select
-    id, count(id)
-from {{ ref('stg_shopify__transactions')}}
-group by id
-having count(id) > 1
+SELECT
+  id,
+  COUNT(id)
+FROM {{ ref('stg_shopify__transactions') }}
+GROUP BY id
+HAVING COUNT(id) > 1

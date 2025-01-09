@@ -1,9 +1,10 @@
 import logging
+import os
 import click
+import pandas as pd
 from sqlalchemy import create_engine, text
 from snowflake.sqlalchemy import URL
 from dotenv import load_dotenv
-import os
 
 # Load environment variables from .env file
 load_dotenv()
@@ -26,7 +27,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
     hide_input=True,
     help="Password for connecting to Snowflake",
 )
-@click.option("-w", "--warehouse", envvar="SNOWFLAKE_TRANSFORM_WAREHOUSE", help="Warehouse to use when connecting to Snowflake")
+@click.option(
+    "-w", "--warehouse", envvar="SNOWFLAKE_TRANSFORM_WAREHOUSE", help="Warehouse to use when connecting to Snowflake"
+)
 @click.option("-r", "--role", envvar="SNOWFLAKE_TRANSFORM_ROLE", help="Role to use when connecting to Snowflake")
 @click.pass_context
 def snowflake(
@@ -108,6 +111,46 @@ def drop(ctx: click.Context, target_db: str, target_schema: str) -> None:
             logging.info("Drop successful.")
     except Exception as e:
         logging.error(f"Error executing drop: {e}")
+    finally:
+        engine.dispose()
+
+
+@snowflake.command()
+@click.option("-t", "--table-name", default="None", help="The table to query")
+@click.option(
+    "-o", "--output-file", default="output/dbt-results.md", help="The file to write the Markdown output to"
+)
+@click.pass_context
+def generate_dbt_markdown(ctx: click.Context, table_name: str, output_file: str) -> None:
+    """
+    Queries a DBT_RESULTS table and generates a Markdown report in a readme.md file.
+    """
+    engine = ctx.obj["engine"]
+    query = f"SELECT * FROM {table_name};"
+    logging.info(f"Querying table '{table_name}' to generate Markdown report.")
+
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text(query))
+            rows = result.fetchall()
+            columns = result.keys()
+
+            # Convert results to a Pandas DataFrame
+            df = pd.DataFrame(rows, columns=columns)
+
+            # Convert DataFrame to Markdown table
+            markdown_table = df.to_markdown(index=False)
+
+            os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+            # Write the Markdown table to the output file
+            with open(output_file, "w") as f:
+                f.write("# DBT Results\n\n")
+                f.write(markdown_table)
+
+            logging.info(f"Markdown report generated successfully and saved to '{output_file}'.")
+    except Exception as e:
+        logging.error(f"Error querying table '{table_name}' or generating Markdown: {e}")
     finally:
         engine.dispose()
 

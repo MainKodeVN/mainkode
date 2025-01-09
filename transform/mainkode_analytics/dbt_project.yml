@@ -68,3 +68,5 @@ models:
     #   +materialized: table
     #   +schema: "reports"
     #   tags: ['reports']
+on-run-end: 
+  - "{{ log_dbt_results(results) }}"

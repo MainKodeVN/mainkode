@@ -1,3 +1,4 @@
+from airflow.contrib.operators.slack_webhook_operator import SlackWebhookOperator
 from airflow.models import Variable
 from kubernetes.client import models as k8s
 
@@ -5,6 +6,7 @@ DBT_IMAGE = "shrestic/dbt-image:latest"
 DEFAULT_AIRFLOW_NAMESPACE = "airflow-dev"
 IS_DEV_MODE = Variable.get("environment")
 S3_MANIFEST_PATH = Variable.get("s3_manifest_path")
+SLACK_CONN_ID = "slack_conn"
 
 # Default settings for all DAGs
 pod_defaults = {
@@ -42,3 +44,21 @@ setup_dbt_project = f"""
 dbt_install_deps_cmd = f"""
     {setup_dbt_project} &&
     dbt deps --profiles-dir=./profiles --target=prod"""
+
+
+def task_slack_alert(is_fail_case, context):
+    badge = ":x:" if is_fail_case else ":white_check_mark:"
+
+    slack_msg = f"""
+    Task {('Failed' if is_fail_case else 'Succeeded')} {badge}.
+    *DAG*: {context.get("dag").dag_id}
+    *Task*: {context.get("task_instance").task_id}
+    *Dag*: {context.get("task_instance").dag_id}
+    *Execution Time*: {context.get("execution_date")}
+    *Log Url*: {context.get("task_instance").log_url}
+    """
+
+    alert = SlackWebhookOperator(
+        task_id="slack_alert", slack_webhook_conn_id=SLACK_CONN_ID, message=slack_msg
+    )
+    return alert.execute(context=context)

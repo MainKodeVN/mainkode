@@ -10,6 +10,7 @@ from mainkode_dags.airflow_utils import (
     S3_MANIFEST_PATH,
     dbt_install_deps_cmd,
     pod_defaults,
+    task_slack_alert,
 )
 from mainkode_dags.kube_secrets import (
     AWS_ACCESS_KEY_ID,
@@ -32,6 +33,12 @@ default_args = {
     "retries": 0,
     "retry_delay": timedelta(minutes=1),
     "start_date": datetime.now(),
+    "on_failure_callback": lambda context: task_slack_alert(
+        is_fail_case=True, context=context
+    ),
+    "on_success_callback": lambda context: task_slack_alert(
+        is_fail_case=False, context=context
+    ),
 }
 
 # Create the DAG

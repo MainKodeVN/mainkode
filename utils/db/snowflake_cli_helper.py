@@ -1,23 +1,49 @@
 import logging
 import os
+
 import click
 import pandas as pd
-from sqlalchemy import create_engine, text
-from snowflake.sqlalchemy import URL
 from dotenv import load_dotenv
+from snowflake.sqlalchemy import URL
+from sqlalchemy import create_engine, text
 
 # Load environment variables from .env file
 load_dotenv()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 @click.group()
-@click.option("-a", "--account", envvar="SNOWFLAKE_ACCOUNT", required=True, help="The name of the Snowflake account")
-@click.option("-d", "--database", envvar="SNOWFLAKE_TRANSFORM_DATABASE", required=True, help="The Snowflake database")
-@click.option("-s", "--schema", envvar="SNOWFLAKE_TRANSFORM_SCHEMA", help="The Snowflake schema (optional)")
-@click.option("-u", "--user", envvar="SNOWFLAKE_TRANSFORM_USER", required=True, help="User for connecting to Snowflake")
+@click.option(
+    "-a",
+    "--account",
+    envvar="SNOWFLAKE_ACCOUNT",
+    required=True,
+    help="The name of the Snowflake account",
+)
+@click.option(
+    "-d",
+    "--database",
+    envvar="SNOWFLAKE_TRANSFORM_DATABASE",
+    required=True,
+    help="The Snowflake database",
+)
+@click.option(
+    "-s",
+    "--schema",
+    envvar="SNOWFLAKE_TRANSFORM_SCHEMA",
+    help="The Snowflake schema (optional)",
+)
+@click.option(
+    "-u",
+    "--user",
+    envvar="SNOWFLAKE_TRANSFORM_USER",
+    required=True,
+    help="User for connecting to Snowflake",
+)
 @click.option(
     "-p",
     "--password",
@@ -28,9 +54,17 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
     help="Password for connecting to Snowflake",
 )
 @click.option(
-    "-w", "--warehouse", envvar="SNOWFLAKE_TRANSFORM_WAREHOUSE", help="Warehouse to use when connecting to Snowflake"
+    "-w",
+    "--warehouse",
+    envvar="SNOWFLAKE_TRANSFORM_WAREHOUSE",
+    help="Warehouse to use when connecting to Snowflake",
 )
-@click.option("-r", "--role", envvar="SNOWFLAKE_TRANSFORM_ROLE", help="Role to use when connecting to Snowflake")
+@click.option(
+    "-r",
+    "--role",
+    envvar="SNOWFLAKE_TRANSFORM_ROLE",
+    help="Role to use when connecting to Snowflake",
+)
 @click.pass_context
 def snowflake(
     ctx: click.Context,
@@ -64,10 +98,25 @@ def snowflake(
 @snowflake.command()
 @click.argument("target_db", type=str)
 @click.argument("source_db", type=str)
-@click.option("--schema", "source_schema", default=None, help="Specify a source schema to clone (optional)")
-@click.option("--target_schema", default=None, help="Specify a target schema if cloning a schema (optional)")
+@click.option(
+    "--schema",
+    "source_schema",
+    default=None,
+    help="Specify a source schema to clone (optional)",
+)
+@click.option(
+    "--target_schema",
+    default=None,
+    help="Specify a target schema if cloning a schema (optional)",
+)
 @click.pass_context
-def clone(ctx: click.Context, target_db: str, source_db: str, source_schema: str, target_schema: str) -> None:
+def clone(
+    ctx: click.Context,
+    target_db: str,
+    source_db: str,
+    source_schema: str,
+    target_schema: str,
+) -> None:
     """
     Clones a Snowflake database or schema. If `source_schema` is provided, clones only that schema.
     """
@@ -75,7 +124,10 @@ def clone(ctx: click.Context, target_db: str, source_db: str, source_schema: str
     clone_query = (
         f"CREATE DATABASE IF NOT EXISTS {target_db} CLONE {source_db};"
         if not source_schema
-        else f"CREATE SCHEMA IF NOT EXISTS {target_db}.{target_schema or source_schema} CLONE {source_db}.{source_schema};"
+        else (
+            f"CREATE SCHEMA IF NOT EXISTS {target_db}.{target_schema or source_schema} "
+            f"CLONE {source_db}.{source_schema};"
+        )
     )
     logging.info(f"Executing clone: {clone_query}")
 
@@ -91,7 +143,12 @@ def clone(ctx: click.Context, target_db: str, source_db: str, source_schema: str
 
 @snowflake.command()
 @click.argument("target_db", type=str)
-@click.option("--schema", "target_schema", default=None, help="Specify a target schema to drop (optional)")
+@click.option(
+    "--schema",
+    "target_schema",
+    default=None,
+    help="Specify a target schema to drop (optional)",
+)
 @click.pass_context
 def drop(ctx: click.Context, target_db: str, target_schema: str) -> None:
     """
@@ -118,10 +175,15 @@ def drop(ctx: click.Context, target_db: str, target_schema: str) -> None:
 @snowflake.command()
 @click.option("-t", "--table-name", default="None", help="The table to query")
 @click.option(
-    "-o", "--output-file", default="output/dbt-results.md", help="The file to write the Markdown output to"
+    "-o",
+    "--output-file",
+    default="output/dbt-results.md",
+    help="The file to write the Markdown output to",
 )
 @click.pass_context
-def generate_dbt_markdown(ctx: click.Context, table_name: str, output_file: str) -> None:
+def generate_dbt_markdown(
+    ctx: click.Context, table_name: str, output_file: str
+) -> None:
     """
     Queries a DBT_RESULTS table and generates a Markdown report in a readme.md file.
     """
@@ -148,9 +210,13 @@ def generate_dbt_markdown(ctx: click.Context, table_name: str, output_file: str)
                 f.write("# DBT Results\n\n")
                 f.write(markdown_table)
 
-            logging.info(f"Markdown report generated successfully and saved to '{output_file}'.")
+            logging.info(
+                f"Markdown report generated successfully and saved to '{output_file}'."
+            )
     except Exception as e:
-        logging.error(f"Error querying table '{table_name}' or generating Markdown: {e}")
+        logging.error(
+            f"Error querying table '{table_name}' or generating Markdown: {e}"
+        )
     finally:
         engine.dispose()
 

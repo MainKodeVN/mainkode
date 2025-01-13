@@ -1,10 +1,11 @@
+import logging
 import os
 import re
 import sys
-import logging
-from sqlalchemy import create_engine
-from snowflake.sqlalchemy import URL as snowflake_URL
 from os import environ as env
+
+from snowflake.sqlalchemy import URL as snowflake_URL
+from sqlalchemy import create_engine
 
 
 # Define a function to create a Snowflake engine for different roles
@@ -41,7 +42,9 @@ def create_snowflake_engine(role: str) -> create_engine:
 
 
 # Define a function to load a JSON file into Snowflake
-def load_file_to_snowflake(file: str, stage: str, table: str, engine: create_engine) -> None:
+def load_file_to_snowflake(
+    file: str, stage: str, table: str, engine: create_engine
+) -> None:
     """
     Upload a JSON file to a Snowflake stage and copy its contents to a table.
     """

@@ -1,10 +1,13 @@
 import os
+
 import requests
 
 
 class BaseAPI:
     def __init__(self, source):
-        self._github_api_url = f"https://api.github.com/repos/shrestic/temp_data/contents/{source}"
+        self._github_api_url = (
+            f"https://api.github.com/repos/shrestic/temp_data/contents/{source}"
+        )
         self.saved_data_directory = f"./data/{source}"
         self.source = source
         # Ensure local directory exists
@@ -30,7 +33,9 @@ class BaseAPI:
                 file.write(response.content)
             print(f"Downloaded: {local_file_path}")
         else:
-            print(f"Failed to download file: {local_file_path}. HTTP Status Code: {response.status_code}")
+            print(
+                f"Failed to download file: {local_file_path}. HTTP Status Code: {response.status_code}"
+            )
 
     def fetch_data(self, url=None, local_dir=None):
         """Fetch all files recursively from the GitHub folder and download only CSV files."""
@@ -59,4 +64,3 @@ class BaseAPI:
 
                 # Recursively download CSVs from subdirectories
                 self.fetch_data(file_info["url"], sub_dir_path)
-

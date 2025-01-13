@@ -1,6 +1,6 @@
 import logging
-from fire import Fire
-from dotenv import dotenv_values, load_dotenv
+
+from dotenv import load_dotenv
 from snowflake.sqlalchemy import URL
 from sqlalchemy import create_engine, text
 
@@ -60,22 +60,33 @@ class SnowflakeManager:
     # ---- Schema Methods ----
 
     def create_schema(self, database_name, schema_name: str):
-        create_schema_query = f"CREATE SCHEMA IF NOT EXISTS {database_name}.{schema_name} ;"
+        create_schema_query = (
+            f"CREATE SCHEMA IF NOT EXISTS {database_name}.{schema_name} ;"
+        )
         logging.info(f"Creating schema '{database_name}.{schema_name}'.")
 
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(create_schema_query))
-                logging.info(f"Schema '{database_name}.{schema_name}' created successfully.")
+                logging.info(
+                    f"Schema '{database_name}.{schema_name}' created successfully."
+                )
         except Exception as e:
             logging.error(f"Error creating schema '{database_name}.{schema_name}': {e}")
 
     # ---- Table Methods ----
 
-    def create_table(self, database_name: str, schema_name: str, table_name: str, table_definition: str):
+    def create_table(
+        self,
+        database_name: str,
+        schema_name: str,
+        table_name: str,
+        table_definition: str,
+    ):
         create_table_query = f"CREATE OR REPLACE TABLE {database_name}.{schema_name}.{table_name} ({table_definition});"
         logging.info(
-            f"Creating table '{table_name}' in schema '{schema_name} in database {database_name}' with definition '{table_definition}'."
+            f"Creating table '{table_name}' in schema '{schema_name}' "
+            f"in database '{database_name}' with definition '{table_definition}'."
         )
 
         try:
@@ -152,14 +163,20 @@ class SnowflakeManager:
             schema_name: The name of the schema where privileges will be granted.
         """
         grant_query = f"GRANT ALL PRIVILEGES ON FUTURE TABLES IN SCHEMA {schema_name} TO ROLE LOADER;"
-        logging.info(f"Granting ALL PRIVILEGES on future tables in schema '{schema_name}'.")
+        logging.info(
+            f"Granting ALL PRIVILEGES on future tables in schema '{schema_name}'."
+        )
 
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(grant_query))
-                logging.info(f"Granted ALL PRIVILEGES on future tables in schema '{schema_name}'.")
+                logging.info(
+                    f"Granted ALL PRIVILEGES on future tables in schema '{schema_name}'."
+                )
         except Exception as e:
-            logging.error(f"Error granting ALL PRIVILEGES on future tables in schema '{schema_name}': {e}")
+            logging.error(
+                f"Error granting ALL PRIVILEGES on future tables in schema '{schema_name}': {e}"
+            )
 
     def grant_create_table_usage_on_schema(self, schema_name: str):
         """
@@ -168,15 +185,23 @@ class SnowflakeManager:
         Args:
             schema_name: The name of the schema where privileges will be granted.
         """
-        grant_query = f"GRANT CREATE TABLE, USAGE ON SCHEMA {schema_name} TO ROLE LOADER;"
-        logging.info(f"Granting CREATE TABLE, USAGE privileges on schema '{schema_name}'.")
+        grant_query = (
+            f"GRANT CREATE TABLE, USAGE ON SCHEMA {schema_name} TO ROLE LOADER;"
+        )
+        logging.info(
+            f"Granting CREATE TABLE, USAGE privileges on schema '{schema_name}'."
+        )
 
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(grant_query))
-                logging.info(f"Granted CREATE TABLE, USAGE privileges on schema '{schema_name}'.")
+                logging.info(
+                    f"Granted CREATE TABLE, USAGE privileges on schema '{schema_name}'."
+                )
         except Exception as e:
-            logging.error(f"Error granting CREATE TABLE, USAGE privileges on schema '{schema_name}': {e}")
+            logging.error(
+                f"Error granting CREATE TABLE, USAGE privileges on schema '{schema_name}': {e}"
+            )
 
     def grant_create_schema_usage_on_database(self, database_name: str):
         """
@@ -185,15 +210,23 @@ class SnowflakeManager:
         Args:
             database_name: The name of the database where privileges will be granted.
         """
-        grant_query = f"GRANT CREATE SCHEMA, USAGE ON DATABASE {database_name} TO ROLE LOADER;"
-        logging.info(f"Granting CREATE SCHEMA, USAGE privileges on database '{database_name}'.")
+        grant_query = (
+            f"GRANT CREATE SCHEMA, USAGE ON DATABASE {database_name} TO ROLE LOADER;"
+        )
+        logging.info(
+            f"Granting CREATE SCHEMA, USAGE privileges on database '{database_name}'."
+        )
 
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(grant_query))
-                logging.info(f"Granted CREATE SCHEMA, USAGE privileges on database '{database_name}'.")
+                logging.info(
+                    f"Granted CREATE SCHEMA, USAGE privileges on database '{database_name}'."
+                )
         except Exception as e:
-            logging.error(f"Error granting CREATE SCHEMA, USAGE privileges on database '{database_name}': {e}")
+            logging.error(
+                f"Error granting CREATE SCHEMA, USAGE privileges on database '{database_name}': {e}"
+            )
 
     def close(self):
         logging.info("Closing Snowflake engine connection.")

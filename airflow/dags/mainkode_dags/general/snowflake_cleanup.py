@@ -1,6 +1,6 @@
 # """
 # Airflow DAG for Snowflake Cleanup
-# Automates weekly cleanup tasks in Snowflake, such as purging cloned databases, 
+# Automates weekly cleanup tasks in Snowflake, such as purging cloned databases,
 # dropping unused development schemas, and deprovisioning stale users.
 # """
 
@@ -12,7 +12,13 @@
 
 # # Import custom utilities and secrets (replace with actual paths or adjust as needed)
 # from airflow_utils import DATA_IMAGE, gitlab_defaults, slack_failed_task
-# from kube_secrets import SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PASSWORD, PERMISSION_BOT_USER, PERMISSION_BOT_PASSWORD
+# from kube_secrets import (
+#     SNOWFLAKE_ACCOUNT,
+#     SNOWFLAKE_USER,
+#     SNOWFLAKE_PASSWORD,
+#     PERMISSION_BOT_USER,
+#     PERMISSION_BOT_PASSWORD,
+# )
 
 # # Set up environment variables for the tasks
 # pod_env_vars = {"CI_PROJECT_DIR": "/analytics", "SNOWFLAKE_PROD_DATABASE": "PROD"}

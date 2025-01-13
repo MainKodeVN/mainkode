@@ -6,15 +6,14 @@ __pycache__/
 *$py.class
 
 # dbt_utils
-transform/snowflake-dbt/dbt_modules/
-transform/snowflake-dbt/dbt_packages/
+transform/mainkode_analytics/dbt_modules/
+transform/mainkode_analytics/dbt_packages/
 utils/db/output/
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -84,8 +83,8 @@ target/
 .ipynb_checkpoints
 
 # Logs
-transform/snowflake-dbt/logs/
-transform/mattermost-analytics/logs/
+transform/mainkode_analytics/logs/
+transform/mainkode_analytics/logs/
 # .vscode
 .vscode/
 Snowflake_Prod.session.sql

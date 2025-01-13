@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  dbt_service:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    container_name: dbt_container
+    command: tail -f /dev/null

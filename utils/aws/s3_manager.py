@@ -1,9 +1,10 @@
-import os
-import boto3
 import logging
-from fire import Fire
+import os
+
+import boto3
+from botocore.exceptions import ClientError, NoCredentialsError
 from dotenv import load_dotenv
-from botocore.exceptions import NoCredentialsError, ClientError
+
 
 class S3Manager:
     def __init__(self):
@@ -20,7 +21,9 @@ class S3Manager:
         # Get AWS credentials from environment variables
         self.aws_access_key_id = os.environ.get("AWS_ACCESS_KEY_ID")
         self.aws_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
-        self.aws_region = os.environ.get("AWS_DEFAULT_REGION", "us-east-1")  # Default to 'us-east-1'
+        self.aws_region = os.environ.get(
+            "AWS_DEFAULT_REGION", "us-east-1"
+        )  # Default to 'us-east-1'
 
         # Create an S3 client using environment credentials
         session = boto3.Session(

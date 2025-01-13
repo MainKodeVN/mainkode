@@ -7,6 +7,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = "3.11.11"
+
 dependencies = [
     "agate (==1.9.1)",
     "annotated-types (==0.7.0)",
@@ -129,3 +130,14 @@ dependencies = [
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+[tool.poetry]
+package-mode = false
+[tool.poetry.group.dev.dependencies]
+isort = "^5.13.2"
+black = "^24.10.0"
+flake8 = "^7.1.1"
+[tool.black]
+line-length = 88  # Ensure it matches your desired line length (usually black's default)
+[tool.isort]
+profile = "black"  # Ensure isort follows black's import formatting style
+line_length = 88  # Ensure line length matches black

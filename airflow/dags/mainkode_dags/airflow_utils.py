@@ -1,5 +1,5 @@
-from kubernetes.client import models as k8s
 from airflow.models import Variable
+from kubernetes.client import models as k8s
 
 DBT_IMAGE = "shrestic/dbt-image:latest"
 DEFAULT_AIRFLOW_NAMESPACE = "airflow-dev"
@@ -32,7 +32,7 @@ if IS_DEV_MODE == "docker-compose":
     pod_defaults["in_cluster"] = False
     pod_defaults["config_file"] = "/opt/kube/airflow-kube.yaml"
 
-clone_repo_cmd = f"git clone -b master --single-branch --depth 1 https://github.com/MainKodeVN/mainkode.git"
+clone_repo_cmd = "git clone -b master --single-branch --depth 1 https://github.com/MainKodeVN/mainkode.git"
 
 
 setup_dbt_project = f"""

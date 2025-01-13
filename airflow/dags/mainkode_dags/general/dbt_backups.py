@@ -8,7 +8,9 @@
 
 # # Essential Airflow imports
 # from airflow import DAG
-# from airflow.operators.bash_operator import BashOperator  # Simple BashOperator for initial setup
+# from airflow.operators.bash_operator import (
+#     BashOperator,
+# )  # Simple BashOperator for initial setup
 
 # # Basic configuration for the DAG
 # default_args = {
@@ -41,11 +43,16 @@
 # # Loop through each task in the config and create a backup task
 # for task_name, task_details in config_dict.items():
 #     backup_list = task_details.get("TABLE_LIST_BACKUP", [])
-#     backup_str = ",".join(backup_list)  # Format list as a string for Bash command
+#     # Format list as a string for Bash command
+#     backup_str = ",".join(backup_list)
 
 #     # Define a simple Bash task for running backups
 #     backup_task = BashOperator(
 #         task_id=f"backup_{task_name}",
-#         bash_command=f"echo 'Backing up tables: {backup_str}' && dbt run-operation backup_to_s3 --args '{{TABLE_LIST_BACKUP: {backup_list}}}'",
+#         bash_command=(
+#             f"echo 'Backing up tables: {backup_str}' && "
+#             f"dbt run-operation backup_to_s3 "
+#             f"--args '{{TABLE_LIST_BACKUP: {backup_list}}}'"
+#         ),
 #         dag=dag,
 #     )

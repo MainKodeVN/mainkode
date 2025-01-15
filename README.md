@@ -37,4 +37,4 @@ This project provides a modular, reusable, and open-source **dbt pipeline** to c
 
 ---  
 
-**Author**: Phong Nguyen (a.k.a. shrestic)  
+**Author**: [Phong Nguyen](https://github.com/shrestic) (a.k.a. shrestic)  

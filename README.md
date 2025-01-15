@@ -35,6 +35,10 @@ This project provides a modular, reusable, and open-source **dbt pipeline** to c
 
 <img width="746" alt="image" src="https://github.com/user-attachments/assets/4378e864-49c2-4cff-ae2a-ff7ed2b8550b" />  
 
+## Visualization
+
+![Untitled_Report-1](https://github.com/user-attachments/assets/c3dfa1e7-1df2-41a5-8f22-4c7eaf452167)
+
 ---  
 
 **Author**: [Phong Nguyen](https://github.com/shrestic) (a.k.a. shrestic)  

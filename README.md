@@ -10,7 +10,8 @@ This project provides a modular, reusable, and open-source **dbt pipeline** to c
 
 ## Architecture  
 
-![ELT drawio](https://github.com/user-attachments/assets/4c1613c0-a384-44f3-9232-765a4b7cac26)
+![MainKode-ELT](https://github.com/user-attachments/assets/2551b724-d62b-49fd-9b72-6d858cac77c1)
+
 
 
 - **Data Sources**:  

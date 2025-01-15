@@ -10,7 +10,8 @@ This project provides a modular, reusable, and open-source **dbt pipeline** to c
 
 ## Architecture  
 
-![ELT drawio (1)](https://github.com/user-attachments/assets/aca71b55-cffd-4d71-8186-ed3f373b42ba)  
+![ELT drawio](https://github.com/user-attachments/assets/4c1613c0-a384-44f3-9232-765a4b7cac26)
+
 
 - **Data Sources**:  
   - Shopify: Orders, transactions, balances.  
